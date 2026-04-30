@@ -33,7 +33,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('roster'); 
   const [viewingSquadron, setViewingSquadron] = useState('Vanguard');
   const [squadrons, setSquadrons] = useState(INITIAL_SQUADRONS);
-  const [activeMap, setActiveMap] = useState('devios');
+  const [activeMap, setActiveMap] = useState('Devios');
   
   const [markers, setMarkers] = useState([]);
   const [lines, setLines] = useState([]);

@@ -35,7 +35,7 @@ const TacticalMapContent = ({
   const stageRef = useRef(null);
   
   const [dimensions, setDimensions] = useState({ width: 800, height: 600, scale: 0.5 });
-  const [mapImage] = useImage(`/maps/${activeMap}.jpg`, 'anonymous');
+  const [mapImage] = useImage(activeMap !== 'Blank' ? `/maps/${activeMap}.png` : null, 'anonymous');
   
   const [mapTool, setMapTool] = useState('ping'); 
   const [isDrawing, setIsDrawing] = useState(false);
@@ -187,7 +187,9 @@ const TacticalMapContent = ({
             <span className="text-cyan text-mono uppercase" style={{ fontSize: '12px', fontWeight: 700 }}>Theater:</span>
             {isCommander ? (
               <select value={activeMap} onChange={(e) => socket.emit('change-map', { roomId: activeRoom, mapName: e.target.value })} className="input-field text-mono uppercase" style={{ padding: '8px', fontSize: '12px' }}>
-                <option value="devios">DEVIOS (HOME PORT)</option>
+                {["Blank", "Aruba", "Bord Radel", "Bridgetown", "Charlestown", "Cursed City", "Devios", "Everston", "Fiji", "Gelbion", "Gray Island", "La Navidad", "Laguna Blanco", "Los Catuano", "Masadora", "Nevis", "Nisogora", "North Bastion", "Northside", "Oneg", "San Cristobel", "San Martinas", "South Bastion", "Thermopylae"].map(m => (
+                  <option key={m} value={m}>{m.toUpperCase()}</option>
+                ))}
               </select>
             ) : (
               <span className="text-cyan text-mono uppercase" style={{ fontSize: '12px', fontWeight: 700, background: 'var(--bg-main)', padding: '8px 12px', borderRadius: 'var(--radius-md)' }}>{activeMap}</span>

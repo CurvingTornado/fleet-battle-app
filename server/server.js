@@ -42,7 +42,7 @@ io.on('connection', (socket) => {
                 commanderId: playerId,
                 roster: [], 
                 squadrons: JSON.parse(JSON.stringify(defaultSquadrons)),
-                currentMap: 'devios',
+                currentMap: 'Devios',
                 markers: [],
                 lines: [],
                 squadronPositions: {}
