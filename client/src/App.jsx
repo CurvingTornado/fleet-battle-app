@@ -18,6 +18,24 @@ const INITIAL_SQUADRONS = {
   "Reserve": { name: "Reserve", active: true, formation: "Line Ahead", players: [] }
 };
 
+const FAKE_PLAYERS = [
+  { id: 'fake_1', name: 'CAPT. AUBREY', tag: 'HMS', status: 'online', offers: ['HMS VICTORY (1ST)', 'HMS AGAMEMNON (3RD)', 'HMS SURPRISE (FRIGATE)'], ship: 'HMS VICTORY (1ST)', selected: true, role: 'Member' },
+  { id: 'fake_2', name: 'CMDR. PULLINGS', tag: 'HMS', status: 'online', offers: ['HMS SURPRISE (FRIGATE)', 'HMS SOPHIE (BRIG)'], ship: 'HMS SURPRISE (FRIGATE)', selected: true, role: 'Member' },
+  { id: 'fake_3', name: 'LT. MOWETT', tag: 'HMS', status: 'online', offers: ['HMS SURPRISE (FRIGATE)'], ship: '', selected: true, role: 'Member' },
+  { id: 'fake_4', name: 'CAPT. HORNBLOWER', tag: 'HMS', status: 'online', offers: ['HMS SUTHERLAND (3RD)', 'HMS INDEFATIGABLE (FRIGATE)', 'HMS WITCH OF ENDOR'], ship: 'HMS SUTHERLAND (3RD)', selected: true, role: 'Member' },
+  { id: 'fake_5', name: 'LT. BUSH', tag: 'HMS', status: 'online', offers: ['HMS SUTHERLAND (3RD)'], ship: '', selected: true, role: 'Member' },
+  { id: 'fake_6', name: 'ADM. NELSON', tag: 'HMS', status: 'online', offers: ['HMS VICTORY (1ST)'], ship: 'HMS VICTORY (1ST)', selected: true, role: 'Member' },
+  { id: 'fake_7', name: 'CAPT. HARDY', tag: 'HMS', status: 'online', offers: ['HMS VICTORY (1ST)'], ship: '', selected: true, role: 'Member' },
+  { id: 'fake_8', name: 'CAPT. COLLINGWOOD', tag: 'HMS', status: 'online', offers: ['HMS ROYAL SOVEREIGN (1ST)'], ship: 'HMS ROYAL SOVEREIGN (1ST)', selected: true, role: 'Member' },
+  { id: 'fake_9', name: 'CAPT. DE SAUMAREZ', tag: 'HMS', status: 'online', offers: ['HMS ORION (3RD)'], ship: 'HMS ORION (3RD)', selected: true, role: 'Member' },
+  { id: 'fake_10', name: 'CAPT. TROUBRIDGE', tag: 'HMS', status: 'online', offers: ['HMS CULLODEN (3RD)'], ship: 'HMS CULLODEN (3RD)', selected: true, role: 'Member' },
+  { id: 'fake_11', name: 'CAPT. BALL', tag: 'HMS', status: 'online', offers: ['HMS ALEXANDER (3RD)'], ship: '', selected: true, role: 'Member' },
+  { id: 'fake_12', name: 'CAPT. HOOD', tag: 'HMS', status: 'online', offers: ['HMS ZEALOUS (3RD)'], ship: '', selected: true, role: 'Member' },
+  { id: 'fake_13', name: 'CAPT. FOLEY', tag: 'HMS', status: 'online', offers: ['HMS GOLIATH (3RD)'], ship: '', selected: true, role: 'Member' },
+  { id: 'fake_14', name: 'CAPT. MILLER', tag: 'HMS', status: 'online', offers: ['HMS THESEUS (3RD)'], ship: '', selected: true, role: 'Member' },
+  { id: 'fake_15', name: 'CAPT. BERRY', tag: 'HMS', status: 'online', offers: ['HMS VANGUARD (3RD)'], ship: '', selected: true, role: 'Member' },
+];
+
 function App() {
   const [isConnected, setIsConnected] = useState(false);
   const [joinToken, setJoinToken] = useState('');
@@ -97,6 +115,27 @@ function App() {
     }
   }, []);
 
+  const mockSocket = {
+    emit: (event, data) => {
+      if (event === 'add-marker') {
+        setMarkers(prev => [...prev, data.markerData]);
+      } else if (event === 'delete-marker') {
+        setMarkers(prev => prev.filter(m => m.id !== data.markerId));
+      } else if (event === 'add-line') {
+        setLines(prev => [...prev, data.line]);
+      } else if (event === 'delete-line') {
+        setLines(prev => prev.filter(l => l.id !== data.lineId));
+      } else if (event === 'update-squadron-position') {
+        setSquadronPositions(prev => ({ ...prev, [data.sqKey]: data.position }));
+      } else if (event === 'change-map') {
+        setActiveMap(data.mapName);
+      } else if (event === 'clear-board') {
+        setMarkers([]);
+        setLines([]);
+      }
+    }
+  };
+
   const mySquadronKey = Object.keys(squadrons).find(key => 
     (squadrons[key]?.players || []).includes(localPlayerId)
   );
@@ -121,9 +160,21 @@ function App() {
 
   const handleJoinLobby = (e, tokenOverride) => {
     if (e) e.preventDefault();
-    const token = tokenOverride || joinToken;
-    if (!commanderName.trim() || token.trim() === '') return alert("Please enter a Name and Token");
+    const token = (tokenOverride || joinToken).trim().toUpperCase();
+    if (!commanderName.trim() || token === '') return alert("Please enter a Name and Token");
     
+    if (token === 'PLAYGROUND') {
+      setActiveRoom('PLAYGROUND');
+      setIsCommander(true);
+      setLobbyName("Tactical Playground");
+      setFleetRoster([
+        { id: localPlayerId, name: commanderName.toUpperCase(), tag: playerTag.toUpperCase(), status: 'online', offers: savedShips, ship: '', selected: true, role: 'Commander' },
+        ...FAKE_PLAYERS
+      ]);
+      setRecentLobbies(prev => Array.from(new Set([token, ...prev])).slice(0, 3));
+      return;
+    }
+
     socket.emit('join-room', { 
       roomId: token, 
       name: commanderName, 
@@ -141,31 +192,53 @@ function App() {
 
   const handleRenameLobby = (newName) => {
     setLobbyName(newName);
-    socket.emit('update-lobby-name', { roomId: activeRoom, name: newName });
+    if (activeRoom !== 'PLAYGROUND') {
+      socket.emit('update-lobby-name', { roomId: activeRoom, name: newName });
+    }
   };
 
   const handleAddShipOffer = (ship) => {
     const newOffers = [...new Set([...savedShips, ship])];
     setSavedShips(newOffers);
-    socket.emit('update-offers', { roomId: activeRoom, playerId: localPlayerId, offers: newOffers });
+    if (activeRoom === 'PLAYGROUND') {
+      setFleetRoster(prev => prev.map(p => p.id === localPlayerId ? { ...p, offers: newOffers } : p));
+    } else {
+      socket.emit('update-offers', { roomId: activeRoom, playerId: localPlayerId, offers: newOffers });
+    }
   };
 
   const handleRemoveShipOffer = (ship) => {
     const newOffers = savedShips.filter(s => s !== ship);
     setSavedShips(newOffers);
-    socket.emit('update-offers', { roomId: activeRoom, playerId: localPlayerId, offers: newOffers });
+    if (activeRoom === 'PLAYGROUND') {
+      setFleetRoster(prev => prev.map(p => p.id === localPlayerId ? { ...p, offers: newOffers } : p));
+    } else {
+      socket.emit('update-offers', { roomId: activeRoom, playerId: localPlayerId, offers: newOffers });
+    }
   };
 
   const handleToggleSelection = (playerId) => {
-    socket.emit('toggle-selection', { roomId: activeRoom, playerId });
+    if (activeRoom === 'PLAYGROUND') {
+      setFleetRoster(prev => prev.map(p => p.id === playerId ? { ...p, selected: !p.selected } : p));
+    } else {
+      socket.emit('toggle-selection', { roomId: activeRoom, playerId });
+    }
   };
 
   const handleChangeRole = (playerId, role) => {
-    socket.emit('update-role', { roomId: activeRoom, playerId, role });
+    if (activeRoom === 'PLAYGROUND') {
+      setFleetRoster(prev => prev.map(p => p.id === playerId ? { ...p, role } : p));
+    } else {
+      socket.emit('update-role', { roomId: activeRoom, playerId, role });
+    }
   };
 
   const handleCommanderSelectShip = (playerId, shipName) => {
-    socket.emit('commander-assign-ship', { roomId: activeRoom, playerId, ship: shipName });
+    if (activeRoom === 'PLAYGROUND') {
+      setFleetRoster(prev => prev.map(p => p.id === playerId ? { ...p, ship: shipName } : p));
+    } else {
+      socket.emit('commander-assign-ship', { roomId: activeRoom, playerId, ship: shipName });
+    }
   };
 
   const handleToggleSquadron = (sqName) => {
@@ -173,14 +246,18 @@ function App() {
     newSquadrons[sqName].active = !newSquadrons[sqName].active;
     if (!newSquadrons[sqName].active) newSquadrons[sqName].players = [];
     setSquadrons(newSquadrons); 
-    socket.emit('update-squadrons', { roomId: activeRoom, newState: newSquadrons });
+    if (activeRoom !== 'PLAYGROUND') {
+      socket.emit('update-squadrons', { roomId: activeRoom, newState: newSquadrons });
+    }
   };
 
   const handleRenameSquadron = (sqKey, newName) => {
     const newSquadrons = JSON.parse(JSON.stringify(squadrons));
     newSquadrons[sqKey].name = newName;
     setSquadrons(newSquadrons);
-    socket.emit('update-squadrons', { roomId: activeRoom, newState: newSquadrons });
+    if (activeRoom !== 'PLAYGROUND') {
+      socket.emit('update-squadrons', { roomId: activeRoom, newState: newSquadrons });
+    }
   };
 
   const handleDrop = (e, targetSquadronName) => {
@@ -200,14 +277,18 @@ function App() {
     }
     
     setSquadrons(newSquadrons);
-    socket.emit('update-squadrons', { roomId: activeRoom, newState: newSquadrons });
+    if (activeRoom !== 'PLAYGROUND') {
+      socket.emit('update-squadrons', { roomId: activeRoom, newState: newSquadrons });
+    }
   };
 
   const handleFormationChange = (sqName, newFormation) => {
     const newSquadrons = JSON.parse(JSON.stringify(squadrons));
     newSquadrons[sqName].formation = newFormation;
     setSquadrons(newSquadrons);
-    socket.emit('update-squadrons', { roomId: activeRoom, newState: newSquadrons });
+    if (activeRoom !== 'PLAYGROUND') {
+      socket.emit('update-squadrons', { roomId: activeRoom, newState: newSquadrons });
+    }
   };
 
   const unassignedPlayers = fleetRoster.filter(p => p.selected && !Object.values(squadrons).flatMap(sq => sq?.players || []).includes(p.id));
@@ -230,7 +311,7 @@ function App() {
           <div className="lobby-divider"></div>
           
           <form onSubmit={(e) => handleJoinLobby(e, null)} className="lobby-input-group" style={{marginTop: 0}}>
-            <input type="text" placeholder="6-DIGIT TOKEN" maxLength={6} className="input-field text-mono uppercase" style={{textAlign: 'center', fontSize: '20px', letterSpacing: '0.2em', width: '100%'}} value={joinToken} onChange={(e) => setJoinToken(e.target.value.toUpperCase())} />
+            <input type="text" placeholder="TOKEN (E.G. PLAYGROUND)" maxLength={10} className="input-field text-mono uppercase" style={{textAlign: 'center', fontSize: '20px', letterSpacing: '0.2em', width: '100%'}} value={joinToken} onChange={(e) => setJoinToken(e.target.value.toUpperCase())} />
             <button type="submit" className="btn-primary" style={{background: 'var(--bg-panel)', color: 'var(--text-main)', border: '1px solid var(--border-active)', boxShadow: 'none'}}>JOIN LOBBY</button>
             
             {recentLobbies.length > 0 && (
@@ -264,7 +345,10 @@ function App() {
             <p className="app-subtitle">for World of Sea Battles</p>
         </div>
         <div className="connection-status">
-          <div className={`status-dot ${isConnected ? 'connected' : 'disconnected'}`}></div>
+          <div className={`status-dot ${activeRoom === 'PLAYGROUND' ? 'connected' : (isConnected ? 'connected' : 'disconnected')}`} style={activeRoom === 'PLAYGROUND' ? { background: 'var(--text-success)', boxShadow: '0 0 10px var(--text-success)' } : {}}></div>
+          {activeRoom === 'PLAYGROUND' && (
+            <span style={{ background: 'var(--text-success)', color: '#000', padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' }}>SANDBOX MODE</span>
+          )}
           {isCommander && (
             <span style={{ background: 'var(--text-accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold' }}>COMMANDER</span>
           )}
@@ -329,7 +413,7 @@ function App() {
 
         {activeTab === 'whiteboard' && (
           <TacticalMap 
-            socket={socket} 
+            socket={activeRoom === 'PLAYGROUND' ? mockSocket : socket} 
             activeRoom={activeRoom} 
             isCommander={isCommander} 
             squadrons={squadrons} 
