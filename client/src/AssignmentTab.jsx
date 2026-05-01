@@ -49,19 +49,19 @@ const AssignmentTab = ({ unassignedPlayers, isCommander, squadrons, initialSquad
                       <div className="toggle-knob"></div>
                     </div>
                   )}
-                  <h3 style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  <h3 style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em', flex: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                     {isCommander ? (
                       <input 
                         type="text" 
                         value={sq.name} 
                         onChange={(e) => onRenameSquadron(sqName, e.target.value)} 
                         className="input-field text-mono" 
-                        style={{ padding: '4px', fontSize: '12px', background: 'rgba(0,0,0,0.5)', width: '150px' }} 
+                        style={{ padding: '4px', fontSize: '12px', background: 'rgba(0,0,0,0.5)', width: '100%', maxWidth: '150px' }} 
                       />
                     ) : (
                       sq.name
                     )}
-                    <span style={{ color: sq.active ? 'var(--text-success)' : 'var(--text-error)', marginLeft: '8px' }}>{sq.active ? '(ON)' : '(OFF)'}</span>
+                    <span style={{ color: sq.active ? 'var(--text-success)' : 'var(--text-error)' }}>{sq.active ? '(ON)' : '(OFF)'}</span>
                   </h3>
                 </div>
                 {sq.active && (

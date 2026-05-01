@@ -33,6 +33,23 @@
   
   --shadow-glass: 0 10px 30px 0 rgba(0, 0, 0, 0.5);
   --shadow-glow: 0 0 20px var(--accent-cyan-glow);
+
+  /* Responsive Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+  }
 }
 
 * {

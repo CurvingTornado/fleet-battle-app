@@ -504,3 +504,135 @@
 .map-tool-btn:last-child { border-right: none; }
 .map-tool-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
 .map-tool-btn.active { background: rgba(217, 160, 91, 0.2); color: var(--text-accent); }
+
+/* Mobile Responsiveness */
+@media (max-width: 1024px) {
+  .app-header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .assignment-tab {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .recruit-pool {
+    width: 100%;
+    max-height: 300px;
+  }
+
+  .squadron-grid {
+    grid-template-columns: 1fr;
+    overflow-y: visible;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .app-title {
+    font-size: 18px;
+  }
+
+  .tabs-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 0 8px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+  }
+
+  .tabs-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  .tab-btn {
+    padding: 12px 16px;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  .main-content {
+    height: auto;
+    min-height: calc(100vh - 250px);
+  }
+
+  .roster-top-panel {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .roster-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .roster-controls select, 
+  .roster-controls .btn-primary {
+    width: 100% !important;
+  }
+
+  .roster-table-container {
+    overflow-x: auto;
+  }
+
+  .lobby-card {
+    padding: 24px;
+  }
+
+  .lobby-title {
+    font-size: 24px;
+  }
+
+  .map-controls {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .map-tools {
+    justify-content: center;
+  }
+
+  .formation-nav {
+    flex-wrap: wrap;
+    padding: 10px;
+    gap: 8px;
+  }
+  
+  .formation-nav button {
+    padding: 8px 12px;
+    font-size: 10px;
+    flex: 1;
+    min-width: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding: 15px;
+  }
+
+  .connection-status {
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  .squadron-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .squadron-header input {
+    width: 100% !important;
+  }
+}

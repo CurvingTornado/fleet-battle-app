@@ -180,33 +180,31 @@ const TacticalMapContent = ({
   return (
     <div className="map-tab" style={{ padding: '24px', background: 'var(--bg-main)' }}>
       
-      <div className="map-controls glass-panel" style={{ position: 'relative', left: 'auto', right: 'auto', top: 'auto', marginBottom: '16px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="map-controls glass-panel" style={{ position: 'relative', left: 'auto', right: 'auto', top: 'auto', marginBottom: '16px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span className="text-cyan text-mono uppercase" style={{ fontSize: '12px', fontWeight: 700 }}>Theater:</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className="text-cyan text-mono uppercase" style={{ fontSize: '10px', fontWeight: 700 }}>Theater:</span>
             {isCommander ? (
-              <select value={activeMap} onChange={(e) => socket.emit('change-map', { roomId: activeRoom, mapName: e.target.value })} className="input-field text-mono uppercase" style={{ padding: '8px', fontSize: '12px' }}>
+              <select value={activeMap} onChange={(e) => socket.emit('change-map', { roomId: activeRoom, mapName: e.target.value })} className="input-field text-mono uppercase" style={{ padding: '6px', fontSize: '11px', width: 'auto' }}>
                 {["Blank", "Aruba", "Bord Radel", "Bridgetown", "Charlestown", "Cursed City", "Devios", "Everston", "Fiji", "Gelbion", "Gray Island", "La Navidad", "Laguna Blanco", "Los Catuano", "Masadora", "Nevis", "Nisogora", "North Bastion", "Northside", "Oneg", "San Cristobel", "San Martinas", "South Bastion", "Thermopylae"].map(m => (
                   <option key={m} value={m}>{m.toUpperCase()}</option>
                 ))}
               </select>
             ) : (
-              <span className="text-cyan text-mono uppercase" style={{ fontSize: '12px', fontWeight: 700, background: 'var(--bg-main)', padding: '8px 12px', borderRadius: 'var(--radius-md)' }}>{activeMap}</span>
+              <span className="text-cyan text-mono uppercase" style={{ fontSize: '11px', fontWeight: 700, background: 'var(--bg-main)', padding: '6px 10px', borderRadius: 'var(--radius-md)' }}>{activeMap}</span>
             )}
           </div>
           
-          <div style={{ width: '1px', height: '32px', background: 'var(--border-subtle)' }}></div>
-          
-          <div className="map-tools">
-            <button onClick={() => setMapTool('ping')} className={`map-tool-btn ${mapTool === 'ping' ? 'active' : ''}`}>📍 Ping</button>
-            <button onClick={() => { if (isCommander) setMapTool('draw'); }} className={`map-tool-btn ${mapTool === 'draw' ? 'active' : ''}`} style={{ opacity: !isCommander ? 0.5 : 1, cursor: !isCommander ? 'not-allowed' : 'pointer' }} title={!isCommander ? "Commander Only" : ""}>✏️ Draw {isCommander ? '' : '(Locked)'}</button>
-            <button onClick={() => { if (isCommander) setMapTool('erase'); }} className={`map-tool-btn ${mapTool === 'erase' ? 'active' : ''}`} style={{ display: isCommander ? 'block' : 'none' }}>🧽 Erase</button>
+          <div className="map-tools" style={{ flex: 1, minWidth: '150px', justifyContent: 'center' }}>
+            <button onClick={() => setMapTool('ping')} className={`map-tool-btn ${mapTool === 'ping' ? 'active' : ''}`} style={{ flex: 1 }}>📍 Ping</button>
+            <button onClick={() => { if (isCommander) setMapTool('draw'); }} className={`map-tool-btn ${mapTool === 'draw' ? 'active' : ''}`} style={{ flex: 1, opacity: !isCommander ? 0.5 : 1, cursor: !isCommander ? 'not-allowed' : 'pointer' }} title={!isCommander ? "Commander Only" : ""}>✏️ Draw</button>
+            <button onClick={() => { if (isCommander) setMapTool('erase'); }} className={`map-tool-btn ${mapTool === 'erase' ? 'active' : ''}`} style={{ flex: 1, display: isCommander ? 'block' : 'none' }}>🧽 Erase</button>
           </div>
         </div>
         
         {isCommander && (
-          <button onClick={() => socket.emit('clear-board', activeRoom)} style={{ background: 'rgba(214, 40, 40, 0.2)', border: '1px solid var(--text-error)', color: '#E8DAB2', padding: '10px 20px', borderRadius: 'var(--radius-md)', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>🗑️ Clear Map</button>
+          <button onClick={() => socket.emit('clear-board', activeRoom)} style={{ background: 'rgba(214, 40, 40, 0.2)', border: '1px solid var(--text-error)', color: '#E8DAB2', padding: '8px 16px', borderRadius: 'var(--radius-md)', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', width: '100%' }}>🗑️ Clear Map</button>
         )}
         
       </div>

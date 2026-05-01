@@ -230,13 +230,13 @@ function App() {
           <div className="lobby-divider"></div>
           
           <form onSubmit={(e) => handleJoinLobby(e, null)} className="lobby-input-group" style={{marginTop: 0}}>
-            <input type="text" placeholder="6-DIGIT TOKEN" maxLength={6} className="input-field text-mono uppercase" style={{textAlign: 'center', fontSize: '20px', letterSpacing: '0.3em'}} value={joinToken} onChange={(e) => setJoinToken(e.target.value.toUpperCase())} />
+            <input type="text" placeholder="6-DIGIT TOKEN" maxLength={6} className="input-field text-mono uppercase" style={{textAlign: 'center', fontSize: '20px', letterSpacing: '0.2em', width: '100%'}} value={joinToken} onChange={(e) => setJoinToken(e.target.value.toUpperCase())} />
             <button type="submit" className="btn-primary" style={{background: 'var(--bg-panel)', color: 'var(--text-main)', border: '1px solid var(--border-active)', boxShadow: 'none'}}>JOIN LOBBY</button>
             
             {recentLobbies.length > 0 && (
               <div style={{ marginTop: '16px' }}>
                 <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Recent Operations:</p>
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
                   {recentLobbies.map(lobby => {
                     const token = typeof lobby === 'string' ? lobby : lobby.token;
                     const name = typeof lobby === 'string' ? lobby : (lobby.name || lobby.token);
@@ -263,16 +263,15 @@ function App() {
             <h1 className="app-title">Guilliman's Fleet Command</h1>
             <p className="app-subtitle">for World of Sea Battles</p>
         </div>
-        <div className="connection-status" style={{ display: 'flex', alignItems: 'center' }}>
-
+        <div className="connection-status">
           <div className={`status-dot ${isConnected ? 'connected' : 'disconnected'}`}></div>
           {isCommander && (
-            <span style={{ background: 'var(--text-accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', marginRight: '8px' }}>COMMANDER</span>
+            <span style={{ background: 'var(--text-accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold' }}>COMMANDER</span>
           )}
           {isCommander ? (
-            <input type="text" value={lobbyName} onChange={(e) => handleRenameLobby(e.target.value)} placeholder="Name this Operation..." className="input-field text-mono" style={{ background: 'rgba(0,0,0,0.5)', padding: '4px 8px', fontSize: '14px', width: '200px', marginRight: '8px' }} />
+            <input type="text" value={lobbyName} onChange={(e) => handleRenameLobby(e.target.value)} placeholder="Name this Operation..." className="input-field text-mono" style={{ background: 'rgba(0,0,0,0.5)', padding: '4px 8px', fontSize: '14px', flex: 1, minWidth: '150px' }} />
           ) : (
-            <span className="room-id" style={{ marginRight: '8px', fontWeight: 'bold' }}>{lobbyName || 'Operation Lobby'}</span>
+            <span className="room-id" style={{ fontWeight: 'bold' }}>{lobbyName || 'Operation Lobby'}</span>
           )}
           <span className="room-id" style={{ opacity: 0.5 }}>[{activeRoom}]</span>
         </div>

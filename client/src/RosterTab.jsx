@@ -27,7 +27,7 @@ const RosterTab = ({ fleetRoster, localPlayerId, isCommander, onAddShipOffer, on
       
       {/* Top Panel */}
       <div className="roster-top-panel">
-        <div style={{ flex: 1, minWidth: 0, marginRight: '16px' }}>
+        <div style={{ flex: 1, minWidth: '200px' }}>
           <h3 style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px', color: 'var(--text-main)' }}>Vessel Application</h3>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
             {fleetRoster.find(p => p.id === localPlayerId)?.offers?.map((s, i) => (
@@ -36,29 +36,34 @@ const RosterTab = ({ fleetRoster, localPlayerId, isCommander, onAddShipOffer, on
                 <button onClick={() => onRemoveShipOffer(s)} style={{ color: 'var(--text-error)', background: 'rgba(214, 40, 40, 0.2)', borderRadius: '50%', width: '14px', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', border: '1px solid var(--text-error)', padding: 0 }}>✕</button>
               </div>
             ))}
+            {(!fleetRoster.find(p => p.id === localPlayerId)?.offers || fleetRoster.find(p => p.id === localPlayerId)?.offers.length === 0) && (
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic' }}>No ships selected</span>
+            )}
           </div>
         </div>
         <div className="roster-controls">
-          <select value={selectedLocalRate} onChange={(e) => setSelectedLocalRate(e.target.value)} className="input-field text-mono uppercase" style={{ padding: '10px' }}>
-            <option value="">-- Rate --</option>
-            {Object.keys(shipRegistry).map(r => <option key={r} value={r}>{r}</option>)}
-          </select>
-          <select value={selectedLocalShip} onChange={(e) => setSelectedLocalShip(e.target.value)} disabled={!selectedLocalRate} className="input-field text-mono uppercase" style={{ width: '200px', padding: '10px' }}>
+          <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+            <select value={selectedLocalRate} onChange={(e) => setSelectedLocalRate(e.target.value)} className="input-field text-mono uppercase" style={{ padding: '10px', flex: 1 }}>
+              <option value="">-- Rate --</option>
+              {Object.keys(shipRegistry).map(r => <option key={r} value={r}>{r}</option>)}
+            </select>
+            <select value={selectedLocalBuild} onChange={(e) => setSelectedLocalBuild(e.target.value)} className="input-field text-mono uppercase" style={{ padding: '10px', flex: 1 }}>
+              <option value="Standard">Standard</option>
+              <option value="Brawler">Brawler</option>
+              <option value="Boarder">Boarder</option>
+              <option value="Sniper">Sniper</option>
+            </select>
+          </div>
+          <select value={selectedLocalShip} onChange={(e) => setSelectedLocalShip(e.target.value)} disabled={!selectedLocalRate} className="input-field text-mono uppercase" style={{ width: '100%', padding: '10px' }}>
             <option value="Pending Assignment">{selectedLocalRate ? '-- Select Ship --' : '-- Select Rate First --'}</option>
             {selectedLocalRate && shipRegistry[selectedLocalRate].map(s => <option key={s} value={s}>{s}</option>)}
           </select>
-          <select value={selectedLocalBuild} onChange={(e) => setSelectedLocalBuild(e.target.value)} className="input-field text-mono uppercase" style={{ padding: '10px' }}>
-            <option value="Standard">Standard</option>
-            <option value="Brawler">Brawler</option>
-            <option value="Boarder">Boarder</option>
-            <option value="Sniper">Sniper</option>
-          </select>
-          <button onClick={handleAddClick} className="btn-primary" style={{ padding: '10px 20px', fontSize: '11px' }}>Select Ship</button>
+          <button onClick={handleAddClick} className="btn-primary" style={{ padding: '10px 20px', fontSize: '11px', width: '100%' }}>Select Ship</button>
         </div>
       </div>
 
       {/* Table Container */}
-      <div className="roster-table-container">
+      <div className="roster-table-container" style={{ overflowX: 'auto' }}>
         <table className="roster-table">
           <thead>
             <tr>
