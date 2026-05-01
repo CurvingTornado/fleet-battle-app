@@ -145,7 +145,7 @@
 }
 .input-field:focus {
   border-color: var(--border-active);
-  box-shadow: 0 0 8px rgba(72, 190, 255, 0.2);
+  box-shadow: 0 0 8px rgba(217, 160, 91, 0.2);
 }
 
 /* Lobby View */
@@ -254,7 +254,7 @@
 }
 
 .roster-row-selected {
-  background: rgba(0, 212, 255, 0.05);
+  background: rgba(217, 160, 91, 0.05);
   box-shadow: inset 4px 0 0 0 var(--border-highlight);
 }
 
@@ -274,7 +274,7 @@
 .ship-pill-my {
   color: var(--text-accent);
   border-color: var(--border-active);
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(217, 160, 91, 0.1);
 }
 
 .checkbox-custom {
@@ -403,7 +403,7 @@
 .drop-zone {
   width: 100%;
   min-height: 80px;
-  border: 2px dashed rgba(72, 190, 255, 0.3);
+  border: 2px dashed rgba(217, 160, 91, 0.3);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -503,4 +503,4 @@
 }
 .map-tool-btn:last-child { border-right: none; }
 .map-tool-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-.map-tool-btn.active { background: rgba(72, 190, 255, 0.2); color: var(--text-accent); }
+.map-tool-btn.active { background: rgba(217, 160, 91, 0.2); color: var(--text-accent); }

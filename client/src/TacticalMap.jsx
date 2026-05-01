@@ -12,7 +12,7 @@ class MapErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(50, 0, 0, 0.5)', border: '2px solid var(--text-error)', margin: '24px', borderRadius: 'var(--radius-xl)', padding: '40px', textAlign: 'center', boxShadow: '0 0 50px rgba(255, 77, 77, 0.2)' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(50, 0, 0, 0.5)', border: '2px solid var(--text-error)', margin: '24px', borderRadius: 'var(--radius-xl)', padding: '40px', textAlign: 'center', boxShadow: '0 0 50px rgba(214, 40, 40, 0.2)' }}>
           <h2 style={{ fontSize: '30px', fontWeight: 900, color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Fatal Map Error</h2>
           <div style={{ background: 'rgba(0,0,0,0.9)', padding: '24px', borderRadius: 'var(--radius-md)', border: '1px solid var(--text-error)', maxWidth: '768px', width: '100%', overflow: 'auto', marginTop: '16px' }}>
             <p className="text-mono" style={{ color: 'var(--text-error)', textAlign: 'left', fontSize: '14px', whiteSpace: 'pre-wrap' }}>{this.state.errorMessage}</p>
@@ -206,7 +206,7 @@ const TacticalMapContent = ({
         </div>
         
         {isCommander && (
-          <button onClick={() => socket.emit('clear-board', activeRoom)} style={{ background: 'rgba(255, 77, 77, 0.2)', border: '1px solid var(--text-error)', color: '#FFD1D1', padding: '10px 20px', borderRadius: 'var(--radius-md)', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>🗑️ Clear Map</button>
+          <button onClick={() => socket.emit('clear-board', activeRoom)} style={{ background: 'rgba(214, 40, 40, 0.2)', border: '1px solid var(--text-error)', color: '#E8DAB2', padding: '10px 20px', borderRadius: 'var(--radius-md)', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>🗑️ Clear Map</button>
         )}
         
       </div>
@@ -236,7 +236,7 @@ const TacticalMapContent = ({
               <Line 
                 key={lineObj.id || i}
                 points={lineObj.points || lineObj} 
-                stroke="#00D4FF" 
+                stroke="#D9A05B" 
                 strokeWidth={6} 
                 tension={0.5} 
                 lineCap="round" 
@@ -245,17 +245,17 @@ const TacticalMapContent = ({
               />
             ))}
             {isDrawing && mapTool === 'draw' && currentLine.length > 0 && (
-              <Line points={currentLine} stroke="#00D4FF" strokeWidth={6} tension={0.5} lineCap="round" lineJoin="round" opacity={0.8} />
+              <Line points={currentLine} stroke="#D9A05B" strokeWidth={6} tension={0.5} lineCap="round" lineJoin="round" opacity={0.8} />
             )}
           </Layer>
 
           <Layer>
             {(markers || []).map((m) => (
               <Group key={m.id} x={m.x} y={m.y}>
-                <Circle radius={15} stroke="#FF4D4D" strokeWidth={4} />
-                <Circle radius={4} fill="#FF4D4D" />
-                <Rect x={-40} y={20} width={80} height={25} fill="rgba(19, 24, 35, 0.9)" stroke="#FF4D4D" strokeWidth={1} cornerRadius={4} />
-                <Text x={-40} y={27} width={80} text={m.playerName} fill="#FFD1D1" fontSize={12} fontFamily="monospace" align="center" fontStyle="bold" />
+                <Circle radius={15} stroke="#D62828" strokeWidth={4} />
+                <Circle radius={4} fill="#D62828" />
+                <Rect x={-40} y={20} width={80} height={25} fill="rgba(26, 59, 92, 0.9)" stroke="#D62828" strokeWidth={1} cornerRadius={4} />
+                <Text x={-40} y={27} width={80} text={m.playerName} fill="#E8DAB2" fontSize={12} fontFamily="monospace" align="center" fontStyle="bold" />
               </Group>
             ))}
           </Layer>
@@ -271,9 +271,9 @@ const TacticalMapContent = ({
                   onDragStart={(e) => { e.cancelBubble = true; }} 
                   onDragEnd={(e) => handleDragEnd(e, sqKey)}
                 >
-                  <Rect x={-75} y={-20} width={150} height={40} fill="rgba(19, 24, 35, 0.9)" stroke="#00D4FF" strokeWidth={2} cornerRadius={5} shadowColor="rgba(0, 212, 255, 0.4)" shadowBlur={15} />
-                  <Circle x={60} y={0} radius={6} fill="#00E676" />
-                  <Text x={-65} y={-6} width={110} text={sq.name.toUpperCase()} fill="#E2E8F0" fontSize={14} fontFamily="monospace" fontStyle="bold" align="left" />
+                  <Rect x={-75} y={-20} width={150} height={40} fill="rgba(26, 59, 92, 0.9)" stroke="#D9A05B" strokeWidth={2} cornerRadius={5} shadowColor="rgba(217, 160, 91, 0.4)" shadowBlur={15} />
+                  <Circle x={60} y={0} radius={6} fill="#F7B538" />
+                  <Text x={-65} y={-6} width={110} text={sq.name.toUpperCase()} fill="#FDFDFD" fontSize={14} fontFamily="monospace" fontStyle="bold" align="left" />
                 </Group>
               );
             })}

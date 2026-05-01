@@ -4,7 +4,7 @@ const ShipUnit = ({ playerId, fleetRoster, localPlayerId }) => {
   const isMe = p.id === localPlayerId;
   return (
     <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ fontSize: '96px', filter: 'drop-shadow(0 0 20px rgba(0, 212, 255, 0.5))' }}>⛵</div>
+      <div style={{ fontSize: '96px', filter: 'drop-shadow(0 0 20px rgba(217, 160, 91, 0.5))' }}>⛵</div>
       <div className="glass-panel" style={{ marginTop: '16px', textAlign: 'center', padding: '16px', minWidth: '170px' }}>
         <p style={{ fontWeight: 700, fontSize: '18px', letterSpacing: '0.05em', whiteSpace: 'nowrap', color: 'var(--text-main)' }}>
           {p.name} {isMe && <span style={{ color: 'var(--text-error)', fontWeight: 700, fontStyle: 'italic', marginLeft: '10px' }}>(YOU)</span>}

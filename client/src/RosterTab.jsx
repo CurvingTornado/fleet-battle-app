@@ -33,7 +33,7 @@ const RosterTab = ({ fleetRoster, localPlayerId, isCommander, onAddShipOffer, on
             {fleetRoster.find(p => p.id === localPlayerId)?.offers?.map((s, i) => (
               <div key={i} className="ship-pill ship-pill-my" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 {s}
-                <button onClick={() => onRemoveShipOffer(s)} style={{ color: 'var(--text-error)', background: 'rgba(255,0,0,0.2)', borderRadius: '50%', width: '14px', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', border: '1px solid var(--text-error)', padding: 0 }}>✕</button>
+                <button onClick={() => onRemoveShipOffer(s)} style={{ color: 'var(--text-error)', background: 'rgba(214, 40, 40, 0.2)', borderRadius: '50%', width: '14px', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', border: '1px solid var(--text-error)', padding: 0 }}>✕</button>
               </div>
             ))}
           </div>
@@ -96,7 +96,7 @@ const RosterTab = ({ fleetRoster, localPlayerId, isCommander, onAddShipOffer, on
                       <div key={i} className="ship-pill" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         {s}
                         {p.id === localPlayerId && (
-                          <button onClick={() => onRemoveShipOffer(s)} style={{ color: 'var(--text-error)', background: 'rgba(255,0,0,0.2)', borderRadius: '50%', width: '14px', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', border: '1px solid var(--text-error)', padding: 0 }}>✕</button>
+                          <button onClick={() => onRemoveShipOffer(s)} style={{ color: 'var(--text-error)', background: 'rgba(214, 40, 40, 0.2)', borderRadius: '50%', width: '14px', height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', border: '1px solid var(--text-error)', padding: 0 }}>✕</button>
                         )}
                       </div>
                     ))}

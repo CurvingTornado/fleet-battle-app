@@ -38,7 +38,7 @@ function App() {
   const [markers, setMarkers] = useState([]);
   const [lines, setLines] = useState([]);
   const [squadronPositions, setSquadronPositions] = useState({});
-  const [isLightMode, setIsLightMode] = useState(() => localStorage.getItem('theme') === 'light');
+
 
   const [localPlayerId] = useState(() => {
     let id = localStorage.getItem('fleet_dogtag');
@@ -49,10 +49,7 @@ function App() {
     return id;
   });
 
-  useEffect(() => {
-    document.body.classList.toggle('light-theme', isLightMode);
-    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-  }, [isLightMode]);
+
 
   useEffect(() => { localStorage.setItem('commanderName', commanderName); }, [commanderName]);
   useEffect(() => { localStorage.setItem('playerTag', playerTag); }, [playerTag]);
@@ -267,9 +264,7 @@ function App() {
             <p className="app-subtitle">for World of Sea Battles</p>
         </div>
         <div className="connection-status" style={{ display: 'flex', alignItems: 'center' }}>
-          <button onClick={() => setIsLightMode(!isLightMode)} style={{ fontSize: '18px', marginRight: '8px', background: 'transparent', border: 'none', cursor: 'pointer' }} title="Toggle Theme">
-            {isLightMode ? '☀️' : '🌙'}
-          </button>
+
           <div className={`status-dot ${isConnected ? 'connected' : 'disconnected'}`}></div>
           {isCommander && (
             <span style={{ background: 'var(--text-accent)', color: '#000', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', marginRight: '8px' }}>COMMANDER</span>
