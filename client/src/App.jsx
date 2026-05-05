@@ -171,6 +171,13 @@ function App() {
         { id: localPlayerId, name: commanderName.toUpperCase(), tag: playerTag.toUpperCase(), status: 'online', offers: savedShips, ship: '', selected: true, role: 'Commander' },
         ...FAKE_PLAYERS
       ]);
+      
+      // Auto-assign fake players to Center squadron for testing high-density formations
+      const newSquadrons = JSON.parse(JSON.stringify(squadrons));
+      newSquadrons["Center/Main Body"].players = FAKE_PLAYERS.map(p => p.id);
+      setSquadrons(newSquadrons);
+      setViewingSquadron("Center/Main Body");
+
       setRecentLobbies(prev => Array.from(new Set([token, ...prev])).slice(0, 3));
       return;
     }
@@ -291,6 +298,30 @@ function App() {
     }
   };
 
+  const handleReorderSquadron = (sqName, draggedId, targetId) => {
+    const me = fleetRoster.find(r => r.id === localPlayerId);
+    const mySq = Object.keys(squadrons).find(key => squadrons[key].players.includes(localPlayerId));
+    const isSquadLead = me && (me.role === 'Squadron Lead' || me.role === 'Alternate Lead') && mySq === sqName;
+    
+    if (!isCommander && !isSquadLead) return;
+
+    const newSquadrons = JSON.parse(JSON.stringify(squadrons));
+    const players = newSquadrons[sqName].players || [];
+    
+    const dragIdx = players.indexOf(draggedId);
+    const targetIdx = players.indexOf(targetId);
+    
+    if (dragIdx === -1 || targetIdx === -1 || dragIdx === targetIdx) return;
+    
+    players.splice(dragIdx, 1);
+    players.splice(targetIdx, 0, draggedId);
+    
+    setSquadrons(newSquadrons);
+    if (activeRoom !== 'PLAYGROUND') {
+      socket.emit('update-squadrons', { roomId: activeRoom, newState: newSquadrons });
+    }
+  };
+
   const unassignedPlayers = fleetRoster.filter(p => p.selected && !Object.values(squadrons).flatMap(sq => sq?.players || []).includes(p.id));
 
   if (!activeRoom) {
@@ -364,7 +395,7 @@ function App() {
       <div className="tabs-container">
         <button onClick={() => setActiveTab('roster')} className={`tab-btn ${activeTab === 'roster' ? 'active' : ''}`}>1. ROSTER</button>
         <button onClick={() => setActiveTab('assignment')} className={`tab-btn ${activeTab === 'assignment' ? 'active' : ''}`}>2. SQUADRON ASSIGNMENT</button>
-        {(isCommander || mySquadronKey) && <button onClick={() => setActiveTab('view')} className={`tab-btn ${activeTab === 'view' ? 'active' : ''}`}>3. FORMATION ASSIGNMENT</button>}
+        {(isCommander || mySquadronKey) && <button onClick={() => setActiveTab('formation')} className={`tab-btn ${activeTab === 'formation' ? 'active' : ''}`}>3. FORMATION ASSIGNMENT</button>}
         <button onClick={() => setActiveTab('whiteboard')} className={`tab-btn ${activeTab === 'whiteboard' ? 'active' : ''}`}>4. MAP</button>
       </div>
 
@@ -399,7 +430,7 @@ function App() {
           />
         )}
 
-        {activeTab === 'view' && (
+        {activeTab === 'formation' && (
           <FormationTab 
              isCommander={isCommander}
              squadrons={squadrons}
@@ -408,6 +439,7 @@ function App() {
              mySquadronKey={mySquadronKey}
              fleetRoster={fleetRoster}
              localPlayerId={localPlayerId}
+             onReorder={handleReorderSquadron}
           />
         )}
 

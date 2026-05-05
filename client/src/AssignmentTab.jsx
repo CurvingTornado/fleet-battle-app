@@ -1,3 +1,5 @@
+import { getShipIcon } from './constants';
+
 const AssignmentTab = ({ unassignedPlayers, isCommander, squadrons, initialSquadrons, fleetRoster, localPlayerId, mySquadronKey, onDrop, onToggleSquadron, onFormationChange, onRenameSquadron, onChangeRole }) => {
   const me = fleetRoster.find(r => r.id === localPlayerId);
   const isLead = me && (me.role === 'Squadron Lead' || me.role === 'Alternate Lead');
@@ -74,38 +76,46 @@ const AssignmentTab = ({ unassignedPlayers, isCommander, squadrons, initialSquad
                 )}
               </div>
               
-              <div className="squadron-body" onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDrop(e, sqName)}>
-                {sq.active ? (
-                  <>
-                    {(sq.players || []).map(pid => {
-                      const p = fleetRoster.find(r => r.id === pid);
-                      if (!p) return null;
-                      return (
-                        <div key={p.id} draggable={isCommander} onDragStart={(e) => e.dataTransfer.setData('playerId', p.id)} className="assigned-player" style={{ display: 'flex', flexDirection: 'column' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <span style={{ fontWeight: 600 }}>{p.name} {p.tag && <span style={{ fontSize: '10px', opacity: 0.6 }}>[{p.tag}]</span>}</span>
-                            {isCommander && (
-                              <select value={p.role || 'Member'} onChange={(e) => onChangeRole(p.id, e.target.value)} className="input-field text-mono uppercase" style={{ padding: '2px 4px', fontSize: '9px', width: 'auto', marginLeft: '8px' }}>
-                                <option value="Member">Member</option>
-                                <option value="Alternate Lead">Alt Lead</option>
-                                <option value="Squadron Lead">Squad Lead</option>
-                              </select>
-                            )}
+              <div className="squadron-body-container">
+                <div className="squadron-body custom-scrollbar" onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDrop(e, sqName)}>
+                  {sq.active ? (
+                    <>
+                      {(sq.players || []).map(pid => {
+                        const p = fleetRoster.find(r => r.id === pid);
+                        if (!p) return null;
+                        const isMini = (sq.players || []).length > 6;
+                        return (
+                          <div key={p.id} draggable={isCommander} onDragStart={(e) => e.dataTransfer.setData('playerId', p.id)} className={`assigned-player ${isMini ? 'mini' : ''}`}>
+                            <div className="player-info">
+                              <span className="player-name">{p.name} {p.tag && <span className="player-tag">[{p.tag}]</span>}</span>
+                              {isCommander && (
+                                <select value={p.role || 'Member'} onChange={(e) => onChangeRole(p.id, e.target.value)} className="input-field text-mono uppercase role-select">
+                                  <option value="Member">Member</option>
+                                  <option value="Alternate Lead">Alt Lead</option>
+                                  <option value="Squadron Lead">Squad Lead</option>
+                                </select>
+                              )}
+                              {!isCommander && p.role && p.role !== 'Member' && (
+                                <span className="player-role-badge">{p.role}</span>
+                              )}
+                            </div>
+                            <div className="player-details">
+                              <span className="text-cyan text-mono uppercase player-ship">
+                                <img src={`/${getShipIcon(p.ship)}`} alt="" className="mini-rate-icon" />
+                                {p.ship || "---"}
+                              </span>
+                            </div>
                           </div>
-                          <span className="text-cyan text-mono uppercase" style={{ fontSize: '10px', marginTop: '4px', display: 'inline-block' }}>{p.ship || "---"}</span>
-                          {!isCommander && p.role && p.role !== 'Member' && (
-                            <span style={{ fontSize: '9px', color: 'var(--text-accent)', marginTop: '4px', fontWeight: 'bold' }}>{p.role}</span>
-                          )}
-                        </div>
-                      );
-                    })}
-                    <div className="drop-zone">
-                      [ Drop Recruit Here ]
-                    </div>
-                  </>
-                ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Locked</div>
-                )}
+                        );
+                      })}
+                      <div className="drop-zone">
+                        [ Drop Recruit Here ]
+                      </div>
+                    </>
+                  ) : (
+                    <div className="locked-overlay">Locked</div>
+                  )}
+                </div>
               </div>
 
             </div>

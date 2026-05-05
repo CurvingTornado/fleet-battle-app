@@ -1,14 +1,6 @@
 import { useState } from 'react';
+import { SHIP_REGISTRY } from './constants';
 
-const shipRegistry = {
-  "Rate 1": ["12 Apostolov", "Victory", "La Royale", "Santisima Trinidad", "Huracan"],
-  "Rate 2": ["Ingermanland", "Sans Pareil", "Redoutable", "Adventure", "Octopus", "St. Pavel", "Firestorm", "Neptuno", "Vasa", "Montanes"],
-  "Rate 3": ["Poltava", "Anson", "Bellona", "Kobukson", "Deadfish", "Le Saint Louis", "Azov", "Iberia", "Shen"],
-  "Rate 4": ["Surprise", "Essex", "Constitution", "Devourer", "Red Arrow", "Sparrow", "Three Hierarchs", "Flying Cloud"],
-  "Rate 5": ["La Creole", "Black Wind", "San Martin", "La Requin", "Black Prince", "Eagle", "Axel Thorson", "Kwee Song", "Southhampton"],
-  "Rate 6": ["Le Serf", "La Salamandre", "Phoenix", "Polacca", "Balloon", "Savannah", "Golden Apostle", "Shunsen"],
-  "Rate 7": ["Pickle", "Horizont", "Friede"]
-};
 
 const RosterTab = ({ fleetRoster, localPlayerId, isCommander, onAddShipOffer, onRemoveShipOffer, onToggleSelection, onAssignShip }) => {
   const [selectedLocalRate, setSelectedLocalRate] = useState('');
@@ -45,7 +37,7 @@ const RosterTab = ({ fleetRoster, localPlayerId, isCommander, onAddShipOffer, on
           <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
             <select value={selectedLocalRate} onChange={(e) => setSelectedLocalRate(e.target.value)} className="input-field text-mono uppercase" style={{ padding: '10px', flex: 1 }}>
               <option value="">-- Rate --</option>
-              {Object.keys(shipRegistry).map(r => <option key={r} value={r}>{r}</option>)}
+              {Object.keys(SHIP_REGISTRY).map(r => <option key={r} value={r}>{r}</option>)}
             </select>
             <select value={selectedLocalBuild} onChange={(e) => setSelectedLocalBuild(e.target.value)} className="input-field text-mono uppercase" style={{ padding: '10px', flex: 1 }}>
               <option value="Standard">Standard</option>
@@ -56,7 +48,7 @@ const RosterTab = ({ fleetRoster, localPlayerId, isCommander, onAddShipOffer, on
           </div>
           <select value={selectedLocalShip} onChange={(e) => setSelectedLocalShip(e.target.value)} disabled={!selectedLocalRate} className="input-field text-mono uppercase" style={{ width: '100%', padding: '10px' }}>
             <option value="Pending Assignment">{selectedLocalRate ? '-- Select Ship --' : '-- Select Rate First --'}</option>
-            {selectedLocalRate && shipRegistry[selectedLocalRate].map(s => <option key={s} value={s}>{s}</option>)}
+            {selectedLocalRate && SHIP_REGISTRY[selectedLocalRate].map(s => <option key={s} value={s}>{s}</option>)}
           </select>
           <button onClick={handleAddClick} className="btn-primary" style={{ padding: '10px 20px', fontSize: '11px', width: '100%' }}>Select Ship</button>
         </div>
