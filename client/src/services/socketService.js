@@ -23,8 +23,11 @@ const socketService = {
     joinRoom: (payload) => socket.emit('join-room', payload),
     updateOffers: (roomId, playerId, offers) => socket.emit('update-offers', { roomId, playerId, offers }),
     updateLobbyName: (roomId, name) => socket.emit('update-lobby-name', { roomId, name }),
+    setBattleTime: (roomId, battleTime) => socket.emit('set-battle-time', { roomId, battleTime }),
     onRoomJoined: (callback) => socket.on('room-joined', callback),
     onLobbyNameUpdated: (callback) => socket.on('lobby-name-updated', callback),
+    onBattleTimeUpdated: (callback) => socket.on('battle-time-updated', callback),
+    onLobbyClosed: (callback) => socket.on('lobby-closed', callback),
 
     /**
      * Roster Management

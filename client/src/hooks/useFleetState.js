@@ -32,6 +32,7 @@ export const useFleetState = () => {
 
     // --- Application State ---
     const [lobbyName, setLobbyName] = useState('');
+    const [battleTime, setBattleTime] = useState(null);
     const [fleetRoster, setFleetRoster] = useState([]);
     const [squadrons, setSquadrons] = useState(INITIAL_SQUADRONS);
     const [activeMap, setActiveMap] = useState('Devios');
@@ -92,7 +93,7 @@ export const useFleetState = () => {
         socketService.onConnect(() => setIsConnected(true));
         socketService.onDisconnect(() => setIsConnected(false));
 
-        socketService.onRoomJoined(({ isCommander: serverIsCommander, commanderId: serverCommanderId, lobbyName: serverLobbyName }) => {
+        socketService.onRoomJoined(({ isCommander: serverIsCommander, commanderId: serverCommanderId, lobbyName: serverLobbyName, battleTime: serverBattleTime }) => {
             // Use refs here — these hold the CURRENT values even though this
             // callback was defined at mount time when they were empty/initial.
             const isCmd = serverIsCommander
@@ -100,9 +101,16 @@ export const useFleetState = () => {
                 || createdRoomsRef.current.includes(activeRoomRef.current);
             setIsCommander(isCmd);
             setLobbyName(serverLobbyName || '');
+            setBattleTime(serverBattleTime || null);
         });
 
         socketService.onLobbyNameUpdated(setLobbyName);
+        socketService.onBattleTimeUpdated(setBattleTime);
+        socketService.onLobbyClosed(() => {
+            alert('Lobby closed by server (time expired).');
+            setActiveRoom(null);
+            clearTacticalData();
+        });
 
         socketService.onRosterUpdated((updatedRoster) => setFleetRoster(updatedRoster || []));
 
@@ -126,6 +134,8 @@ export const useFleetState = () => {
             socketService.off('disconnect');
             socketService.off('room-joined');
             socketService.off('lobby-name-updated');
+            socketService.off('battle-time-updated');
+            socketService.off('lobby-closed');
             socketService.off('roster-updated');
             socketService.off('squadrons-updated');
             socketService.off('map-updated');
@@ -152,6 +162,7 @@ export const useFleetState = () => {
         setSquadrons(INITIAL_SQUADRONS);
         setIsCommander(false);
         setLobbyName('');
+        setBattleTime(null);
     };
 
     /**
@@ -179,6 +190,7 @@ export const useFleetState = () => {
         commanderName, setCommanderName, playerTag, setPlayerTag,
         recentLobbies, setRecentLobbies, createdRooms, setCreatedRooms,
         savedShips, setSavedShips, lobbyName, setLobbyName,
+        battleTime, setBattleTime,
         fleetRoster, setFleetRoster, squadrons, setSquadrons,
         activeMap, setActiveMap, markers, setMarkers,
         lines, setLines, squadronPositions, setSquadronPositions,
