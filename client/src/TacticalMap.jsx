@@ -2,6 +2,12 @@ import React, { useState, useEffect, useRef, Component } from 'react';
 import { Stage, Layer, Image as KonvaImage, Line, Circle, Text, Group, Rect } from 'react-konva';
 import useImage from 'use-image';
 
+/**
+ * MapErrorBoundary Component
+ * 
+ * Catches fatal errors within the Konva stage to prevent the entire app from crashing.
+ * Provides a specialized error overlay for tactical map issues.
+ */
 class MapErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -24,9 +30,21 @@ class MapErrorBoundary extends Component {
   }
 }
 
+// Canonical resolution for the tactical map. 
+// All coordinates are stored in this space and scaled to the viewport.
 const VIRTUAL_WIDTH = 1920;
 const VIRTUAL_HEIGHT = 1080;
 
+/**
+ * TacticalMapContent Component
+ * 
+ * The core map implementation using react-konva.
+ * Features:
+ * - Dynamic Map Loading: Loads theater backgrounds from /public/maps/.
+ * - Drawing Tools: Pings (Temporary markers) and Freehand Drawing (Commander only).
+ * - Squadron Markers: Draggable labels for active squadrons (Commander only).
+ * - Eraser: Mathematical intersection detection for deleting lines/markers.
+ */
 const TacticalMapContent = ({ 
   socket, activeRoom, isCommander, squadrons, localPlayerId, fleetRoster, activeMap, 
   lines, markers, squadronPositions 
@@ -34,13 +52,18 @@ const TacticalMapContent = ({
   const containerRef = useRef(null);
   const stageRef = useRef(null);
   
+  // Viewport dimensions and scale factor
   const [dimensions, setDimensions] = useState({ width: 800, height: 600, scale: 0.5 });
+  
+  // Background image loading
   const [mapImage] = useImage(activeMap !== 'Blank' ? `/maps/${activeMap}.png` : null, 'anonymous');
   
+  // Tool state
   const [mapTool, setMapTool] = useState('ping'); 
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentLine, setCurrentLine] = useState([]);
 
+  // Handle responsive resizing of the map stage
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {
@@ -58,6 +81,7 @@ const TacticalMapContent = ({
     return () => { clearTimeout(t); window.removeEventListener('resize', updateSize); };
   }, [activeMap]); 
 
+  // Utility to convert screen coordinates to virtual map coordinates
   const getRelativePointerPosition = () => {
     const stage = stageRef.current;
     if (!stage) return null;
@@ -68,11 +92,13 @@ const TacticalMapContent = ({
     return transform.point(pos);
   };
 
+  // Helper to identify if a marker belongs to the local player
   const isMyPing = (playerName) => {
     const me = (fleetRoster || []).find(p => p.id === localPlayerId);
     return me && me.name === playerName;
   };
 
+  // Mathematical utility for eraser collision detection
   const distToSegmentSquared = (p, v, w) => {
     let l2 = Math.pow(v.x - w.x, 2) + Math.pow(v.y - w.y, 2);
     if (l2 === 0) return Math.pow(p.x - v.x, 2) + Math.pow(p.y - v.y, 2);
@@ -81,10 +107,15 @@ const TacticalMapContent = ({
     return Math.pow(p.x - (v.x + t * (w.x - v.x)), 2) + Math.pow(p.y - (v.y + t * (w.y - v.y)), 2);
   };
 
+  /**
+   * Eraser Logic
+   * Checks for intersection between the cursor and all lines/markers.
+   */
   const mathEraseAtPosition = (pos) => {
     if (!pos) return;
     const ERASE_RADIUS_SQ = 35 * 35; 
 
+    // Check Lines
     for (let line of (lines || [])) {
       if (!line.id) continue; 
       const pts = line.points || line;
@@ -98,6 +129,7 @@ const TacticalMapContent = ({
       }
     }
 
+    // Check Markers
     for (let m of (markers || [])) {
       const distSq = Math.pow(pos.x - m.x, 2) + Math.pow(pos.y - m.y, 2);
       if (distSq <= ERASE_RADIUS_SQ) {
@@ -106,11 +138,14 @@ const TacticalMapContent = ({
     }
   };
 
+  // --- Input Handlers ---
+
   const handleContextMenu = (e) => {
     e.evt.preventDefault(); 
     const pos = getRelativePointerPosition();
     if (!pos) return;
 
+    // Right-click to quickly delete markers
     for (let m of (markers || [])) {
       const distSq = Math.pow(pos.x - m.x, 2) + Math.pow(pos.y - m.y, 2);
       if (distSq <= 25 * 25) {
@@ -180,6 +215,7 @@ const TacticalMapContent = ({
   return (
     <div className="map-tab" style={{ padding: '24px', background: 'var(--bg-main)' }}>
       
+      {/* 1. Map Toolbar */}
       <div className="map-controls glass-panel" style={{ position: 'relative', left: 'auto', right: 'auto', top: 'auto', marginBottom: '16px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
@@ -206,9 +242,9 @@ const TacticalMapContent = ({
         {isCommander && (
           <button onClick={() => socket.emit('clear-board', activeRoom)} style={{ background: 'rgba(214, 40, 40, 0.2)', border: '1px solid var(--text-error)', color: '#E8DAB2', padding: '8px 16px', borderRadius: 'var(--radius-md)', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', width: '100%' }}>🗑️ Clear Map</button>
         )}
-        
       </div>
 
+      {/* 2. Map Stage */}
       <div style={{ flex: 1, width: '100%', background: 'var(--bg-panel)', borderRadius: 'var(--radius-xl)', border: '2px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', overflow: 'hidden' }} ref={containerRef}>
         <Stage
           ref={stageRef}
@@ -223,12 +259,14 @@ const TacticalMapContent = ({
           onContextMenu={handleContextMenu} 
           style={{ cursor: mapTool === 'draw' && isCommander ? 'crosshair' : mapTool === 'erase' && isCommander ? 'pointer' : 'crosshair' }}
         >
+          {/* Layer 1: Background Map */}
           <Layer>
             {mapImage && (
               <KonvaImage image={mapImage} width={VIRTUAL_WIDTH} height={VIRTUAL_HEIGHT} opacity={0.8} />
             )}
           </Layer>
 
+          {/* Layer 2: Commander Drawings */}
           <Layer>
             {(lines || []).map((lineObj, i) => (
               <Line 
@@ -247,6 +285,7 @@ const TacticalMapContent = ({
             )}
           </Layer>
 
+          {/* Layer 3: Pings (Temporary markers) */}
           <Layer>
             {(markers || []).map((m) => (
               <Group key={m.id} x={m.x} y={m.y}>
@@ -258,9 +297,11 @@ const TacticalMapContent = ({
             ))}
           </Layer>
 
+          {/* Layer 4: Squadron Labels (Draggable) */}
           <Layer>
             {Object.keys(squadrons || {}).filter(sqKey => (squadrons[sqKey] || {}).active).map((sqKey, index) => {
               const sq = squadrons[sqKey];
+              if (!sq) return null;
               const pos = (squadronPositions || {})[sqKey] || { x: 100, y: 100 + (index * 60) }; 
               return (
                 <Group 
@@ -271,7 +312,7 @@ const TacticalMapContent = ({
                 >
                   <Rect x={-75} y={-20} width={150} height={40} fill="rgba(26, 59, 92, 0.9)" stroke="#D9A05B" strokeWidth={2} cornerRadius={5} shadowColor="rgba(217, 160, 91, 0.4)" shadowBlur={15} />
                   <Circle x={60} y={0} radius={6} fill="#F7B538" />
-                  <Text x={-65} y={-6} width={110} text={sq.name.toUpperCase()} fill="#FDFDFD" fontSize={14} fontFamily="monospace" fontStyle="bold" align="left" />
+                  <Text x={-65} y={-6} width={110} text={(sq.name || sqKey).toUpperCase()} fill="#FDFDFD" fontSize={14} fontFamily="monospace" fontStyle="bold" align="left" />
                 </Group>
               );
             })}
