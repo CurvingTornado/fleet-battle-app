@@ -11,10 +11,11 @@ import { SHIP_REGISTRY, getShipIcon } from './constants';
  * - Commander Controls: Lead can mark players as 'Deploying' (selected) and assign specific ships.
  */
 
-const RosterTab = ({ fleetRoster, localPlayerId, isCommander, onAddShipOffer, onRemoveShipOffer, onToggleSelection, onAssignShip }) => {
+const RosterTab = ({ fleetRoster, discordApplicants = [], localPlayerId, isCommander, onAddShipOffer, onRemoveShipOffer, onToggleSelection, onAssignShip }) => {
   const [selectedLocalRate, setSelectedLocalRate] = useState('');
   const [selectedLocalShip, setSelectedLocalShip] = useState('');
   const [selectedLocalBuild, setSelectedLocalBuild] = useState('Standard');
+  const [isDiscordPoolOpen, setIsDiscordPoolOpen] = useState(true);
   
   // Find the current player's data in the roster
   const me = fleetRoster.find(p => p.id === localPlayerId);
@@ -180,7 +181,8 @@ const RosterTab = ({ fleetRoster, localPlayerId, isCommander, onAddShipOffer, on
                   ) : (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       {p.ship && <img src={`/${getShipIcon(p.ship)}`} alt="" style={{ width: '16px', height: '16px' }} />}
-                      <span style={{ fontWeight: 600, fontSize: '12px', color: p.ship ? 'var(--text-accent)' : 'inherit' }}>
+                      {/* Icy nautical blue for assigned vessel name — more legible than brass */}
+                      <span style={{ fontWeight: 600, fontSize: '13px', color: p.ship ? 'var(--color-vessel)' : 'inherit' }}>
                         {p.ship ? p.ship.toUpperCase() : '---'}
                       </span>
                     </div>
@@ -191,6 +193,40 @@ const RosterTab = ({ fleetRoster, localPlayerId, isCommander, onAddShipOffer, on
           </tbody>
         </table>
       </div>
+
+      {/* 3. Discord Applicant Pool */}
+      {(isCommander || discordApplicants.length > 0) && (
+        <div className="discord-pool-container glass-panel" style={{ marginTop: '8px' }}>
+          <div 
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '10px' }}
+            onClick={() => setIsDiscordPoolOpen(!isDiscordPoolOpen)}
+          >
+            <h2 style={{ fontSize: '14px', fontWeight: 700, letterSpacing: '0.05em', color: 'rgba(185, 195, 255, 0.85)', textTransform: 'uppercase', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Discord Applicant Pool ({discordApplicants.length})
+            </h2>
+            <span style={{ fontSize: '14px', opacity: 0.7 }}>{isDiscordPoolOpen ? '▼' : '▶'}</span>
+          </div>
+          
+          {isDiscordPoolOpen && (
+            <div style={{ padding: '10px', paddingTop: 0 }}>
+              {discordApplicants.length === 0 ? (
+                <p style={{ fontSize: '11px', opacity: 0.5, fontStyle: 'italic', margin: 0 }}>No pending applications from Discord.</p>
+              ) : (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
+                  {discordApplicants.map(app => (
+                    <div key={app.id} className="ship-pill" style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(130, 145, 255, 0.35)', background: 'rgba(88, 101, 242, 0.1)', padding: '6px 12px' }}>
+                      {app.avatar && <img src={app.avatar} alt="" style={{ width: '20px', height: '20px', borderRadius: '50%' }} />}
+                      <span style={{ fontWeight: 'bold', fontSize: '12px' }}>{app.name}</span>
+                      <span style={{ fontSize: '10px', opacity: 0.7, fontStyle: 'italic' }}>Awaiting Join</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
     </div>
   );
 };

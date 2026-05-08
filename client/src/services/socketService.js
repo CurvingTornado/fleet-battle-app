@@ -36,6 +36,7 @@ const socketService = {
     updateRole: (roomId, playerId, role) => socket.emit('update-role', { roomId, playerId, role }),
     commanderAssignShip: (roomId, playerId, ship) => socket.emit('commander-assign-ship', { roomId, playerId, ship }),
     onRosterUpdated: (callback) => socket.on('roster-updated', callback),
+    onDiscordApplicantsUpdated: (callback) => socket.on('discord-applicants-updated', callback),
 
     /**
      * Squadron Management

@@ -68,6 +68,7 @@ class LobbyManager {
                 lines: [],
                 squadronPositions: {},
                 battleTime: null,
+                discordApplicants: [],
                 deletionTime: timeUtils.calculateDeletionTime(null)
             };
             this.scheduleDeletion(roomId);
@@ -141,6 +142,37 @@ class LobbyManager {
             room.deletionTime = timeUtils.calculateDeletionTime(battleTime);
             this.scheduleDeletion(roomId);
             this.saveState();
+        }
+    }
+
+    /**
+     * Adds a discord applicant to a specific room.
+     */
+    addDiscordApplicant(roomId, user) {
+        const room = this.getRoom(roomId);
+        if (room) {
+            const exists = room.discordApplicants.find(a => a.id === user.id);
+            if (!exists) {
+                room.discordApplicants.push(user);
+                this.saveState();
+                if (this.io) {
+                    this.io.to(roomId).emit('discord-applicants-updated', room.discordApplicants);
+                }
+            }
+        }
+    }
+
+    /**
+     * Removes a discord applicant from a specific room.
+     */
+    removeDiscordApplicant(roomId, userId) {
+        const room = this.getRoom(roomId);
+        if (room) {
+            room.discordApplicants = room.discordApplicants.filter(a => a.id !== userId);
+            this.saveState();
+            if (this.io) {
+                this.io.to(roomId).emit('discord-applicants-updated', room.discordApplicants);
+            }
         }
     }
 

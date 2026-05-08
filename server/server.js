@@ -8,6 +8,7 @@ const LobbyManager = require('./LobbyManager');
 const rosterHandler = require('./socketHandlers/rosterHandler');
 const squadronHandler = require('./socketHandlers/squadronHandler');
 const mapHandler = require('./socketHandlers/mapHandler');
+const { initDiscordBot } = require('./discordBot');
 
 /**
  * Guilliman's Fleet Command - Server
@@ -41,6 +42,9 @@ const io = new Server(server, {
 
 // Initialize the Lobby Manager which handles state persistence and timers
 const lobbyManager = new LobbyManager(io);
+
+// Initialize Discord Bot
+initDiscordBot(lobbyManager);
 
 io.on('connection', (socket) => {
     logger.info(`Socket connected: ${socket.id}`);

@@ -59,6 +59,7 @@ module.exports = function(io, socket, lobbyManager) {
         io.to(roomId).emit('roster-updated', room.roster);
         io.to(roomId).emit('squadrons-updated', room.squadrons);
         io.to(roomId).emit('map-updated', room.currentMap);
+        io.to(roomId).emit('discord-applicants-updated', room.discordApplicants);
         
         // Send existing map markers and lines to the new player
         room.markers.forEach(marker => socket.emit('marker-added', marker));

@@ -57,6 +57,7 @@ function TacticalDashboard({
   setViewingSquadron,
   mySquadronKey,
   fleetRoster,
+  discordApplicants,
   localPlayerId,
   handleAddShipOffer,
   handleRemoveShipOffer,
@@ -75,7 +76,8 @@ function TacticalDashboard({
   lines,
   markers,
   squadronPositions,
-  socket
+  socket,
+  onShowDiscordGuide
 }) {
   return (
     <div className="app-container">
@@ -83,7 +85,29 @@ function TacticalDashboard({
       <div className="app-header glass-panel">
         <div>
           <h1 className="app-title">Guilliman's Fleet Command</h1>
-          <p className="app-subtitle">for World of Sea Battles</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <p className="app-subtitle" style={{ margin: 0 }}>for World of Sea Battles</p>
+            <button 
+              onClick={onShowDiscordGuide}
+              style={{
+                display: 'inline-block',
+                fontSize: '9px',
+                textDecoration: 'none',
+                /* Frosted ghost: subtle purple wash that blends against the blue glass header */
+                background: 'rgba(88, 101, 242, 0.15)',
+                color: 'rgba(185, 195, 255, 0.9)',
+                padding: '3px 8px',
+                borderRadius: '4px',
+                fontWeight: 'bold',
+                border: '1px solid rgba(88, 101, 242, 0.4)',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Invite my Discord Bot to your Server!
+            </button>
+          </div>
         </div>
         <div className="connection-status" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
           {/* Connection status indicator and lobby name input */}
@@ -93,11 +117,13 @@ function TacticalDashboard({
             {isCommander && <span className="commander-badge">COMMANDER</span>}
             {/* Lobby name is editable only by commanders */}
             {isCommander ? (
+              /* Styled lobby name input — matches design system */
               <input 
                 type="text" 
                 value={lobbyName} 
                 onChange={(e) => handleRenameLobby(e.target.value)} 
                 className="input-field text-mono" 
+                style={{ padding: '6px 12px', fontSize: '14px', fontWeight: 700, width: '180px', background: 'rgba(0,0,0,0.35)', border: '1px solid var(--border-active)', letterSpacing: '0.1em' }}
               />
             ) : (
               <span className="room-id">{lobbyName || 'Operation Lobby'}</span>
@@ -111,12 +137,13 @@ function TacticalDashboard({
               <span style={{ color: 'var(--text-muted)' }}>BATTLE TIME:</span>
               {/* Commander can edit battle time, others see it as read-only */}
               {isCommander ? (
+                /* Styled battle time picker — compact to fit in header */
                 <input 
                   type="datetime-local" 
-                  className="input-field text-mono mini" 
+                  className="input-field text-mono" 
                   value={getLocalDatetimeString(battleTime)} 
                   onChange={handleBattleTimeChange}
-                  style={{ padding: '2px 4px', fontSize: '10px' }}
+                  style={{ padding: '5px 10px', fontSize: '12px', background: 'rgba(0,0,0,0.35)', border: '1px solid var(--border-subtle)', width: 'auto', colorScheme: 'dark' }}
                 />
               ) : (
                 <span className="text-accent text-mono" style={{ fontWeight: 'bold' }}>
@@ -148,6 +175,7 @@ function TacticalDashboard({
         {activeTab === 'roster' && (
           <RosterTab 
             fleetRoster={fleetRoster} 
+            discordApplicants={discordApplicants}
             localPlayerId={localPlayerId} 
             isCommander={isCommander} 
             onAddShipOffer={handleAddShipOffer} 

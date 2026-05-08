@@ -92,7 +92,7 @@ const AssignmentTab = ({
                   )}
                 </div>
                 {isCommander && (
-                  <button onClick={() => onToggleSquadron(sqName)} className="ship-pill" style={{ fontSize: '9px', padding: '4px 8px', cursor: 'pointer' }}>
+                  <button onClick={() => onToggleSquadron(sqName)} className="squadron-toggle-btn">
                     {sq.active ? 'DEACTIVATE' : 'ACTIVATE'}
                   </button>
                 )}
@@ -147,16 +147,6 @@ const AssignmentTab = ({
                           </div>
                         );
                       })}
-
-                      {/* Visual Drop Zone Prompt */}
-                      <div 
-                        className="drop-zone" 
-                        onDragOver={(e) => e.preventDefault()} 
-                        onDrop={(e) => { e.stopPropagation(); onDrop(e, sqName); }}
-                        style={{ pointerEvents: 'auto' }} 
-                      >
-                        [ DROP RECRUIT HERE ]
-                      </div>
                     </>
                   ) : (
                     <div className="locked-overlay">

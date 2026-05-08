@@ -3,42 +3,52 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px;
+  /* More generous outer padding on large screens */
+  padding: 28px 32px;
   min-height: 100vh;
-  gap: 24px;
+  gap: 28px;
 }
 
 .app-header {
   width: 100%;
-  max-width: 1400px;
+  /* Wider to fill more of the 2560px screen */
+  max-width: 1700px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 30px;
+  padding: 24px 36px;
+  /* Brass top-edge accent line */
+  border-top: 3px solid var(--border-active);
+  box-shadow: 0 -1px 0 0 rgba(217, 160, 91, 0.15), 0 4px 30px rgba(0, 0, 0, 0.4);
+  position: relative;
 }
 
 .app-title {
-  font-size: 24px;
+  /* Use Cinzel for a premium, nautical command aesthetic */
+  font-family: 'Cinzel', 'Playfair Display', serif;
+  font-size: 32px;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--text-main);
+  letter-spacing: 0.14em;
+  color: var(--text-accent);
   text-transform: uppercase;
+  text-shadow: 0 0 24px rgba(217, 160, 91, 0.45), 0 2px 6px rgba(0, 0, 0, 0.7);
 }
 
 .app-subtitle {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-accent);
   font-style: italic;
   opacity: 0.8;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .connection-status {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   background: var(--bg-card);
-  padding: 10px 16px;
+  /* More padding so it reads as a chunky status pill */
+  padding: 12px 20px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
 }
@@ -47,19 +57,29 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 .status-dot.connected {
   background: var(--text-success);
   box-shadow: 0 0 10px var(--text-success);
+  /* Pulsing glow to indicate live connection */
+  animation: pulseGlow 2s ease-in-out infinite;
 }
 .status-dot.disconnected {
   background: var(--text-error);
   box-shadow: 0 0 10px var(--text-error);
 }
 
+/* Keyframe defined in index.css — used here by reference */
+@keyframes pulseGlow {
+  0%   { box-shadow: 0 0 0 0 rgba(247, 181, 56, 0.7); }
+  70%  { box-shadow: 0 0 0 8px rgba(247, 181, 56, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(247, 181, 56, 0); }
+}
+
 .room-id {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-muted);
   letter-spacing: 0.15em;
@@ -68,20 +88,21 @@
 .sandbox-badge {
   background: var(--text-success);
   color: #000;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 10px;
+  /* Fatter badge padding for legibility */
+  padding: 4px 12px;
+  border-radius: 5px;
+  font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
-  box-shadow: 0 0 10px var(--text-success);
+  box-shadow: 0 0 12px var(--text-success);
 }
 
 .commander-badge {
   background: var(--text-accent);
   color: #000;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
 }
@@ -89,16 +110,17 @@
 /* Tabs */
 .tabs-container {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1700px;
   display: flex;
-  gap: 8px;
+  gap: 10px;
   border-bottom: 2px solid var(--border-active);
-  padding: 0 16px;
+  padding: 0 20px;
 }
 
 .tab-btn {
-  padding: 16px 24px;
-  font-size: 13px;
+  /* Bigger, beefier tabs */
+  padding: 18px 32px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-muted);
   background: var(--bg-card);
@@ -106,15 +128,18 @@
   border-bottom: none;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition: all 0.2s ease;
-  opacity: 0.7;
+  letter-spacing: 0.06em;
+  transition: all 0.25s ease;
+  opacity: 0.65;
+  position: relative;
+  overflow: hidden;
 }
 
 .tab-btn:hover {
   background: var(--bg-card-hover);
   color: var(--text-main);
-  opacity: 1;
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 .tab-btn.active {
@@ -123,14 +148,34 @@
   border-color: var(--border-active);
   opacity: 1;
   box-shadow: inset 0 2px 0 0 var(--border-highlight);
+  transform: translateY(0);
+}
+
+/* Animated brass underline indicator on active tab */
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--border-active), transparent);
+  border-radius: 2px;
+  animation: tabUnderlineGrow 0.3s ease forwards;
+}
+
+@keyframes tabUnderlineGrow {
+  from { width: 0; left: 50%; }
+  to   { width: 80%; left: 10%; }
 }
 
 /* Main Content Area */
 .main-content {
   width: 100%;
-  max-width: 1400px;
-  height: 75vh;
-  min-height: 600px;
+  max-width: 1700px;
+  /* Taller main panel — more content visible */
+  height: 78vh;
+  min-height: 650px;
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
   border-top: none;
   display: flex;
@@ -140,33 +185,62 @@
 
 /* Buttons & Inputs */
 .btn-primary {
-  background: var(--accent-cyan);
+  /* Brass-to-amber gradient with animated shimmer on hover */
+  background: linear-gradient(135deg, #c8853a 0%, #D9A05B 40%, #F7B538 100%);
+  background-size: 200% auto;
+  color: #0d1a26;
+  font-weight: 800;
+  /* Fatter button padding */
+  padding: 14px 30px;
+  font-size: 14px;
+  border-radius: var(--radius-md);
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  box-shadow: 0 0 20px rgba(217, 160, 91, 0.35), 0 2px 10px rgba(0,0,0,0.4);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.btn-primary:hover {
+  background-position: right center;
+  box-shadow: 0 0 30px rgba(247, 181, 56, 0.55), 0 4px 18px rgba(0,0,0,0.5);
+  transform: translateY(-2px);
   color: #000;
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Ghost / outlined button style for secondary actions */
+.btn-ghost {
+  background: transparent;
+  color: var(--text-accent);
   font-weight: 700;
   padding: 12px 24px;
   border-radius: var(--radius-md);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  box-shadow: var(--shadow-glow);
+  border: 1px solid var(--border-active);
   transition: all 0.2s ease;
 }
-.btn-primary:hover {
-  background: var(--accent-cyan-hover);
+.btn-ghost:hover {
+  background: rgba(217, 160, 91, 0.12);
+  box-shadow: 0 0 12px rgba(217, 160, 91, 0.2);
   transform: translateY(-1px);
 }
 
 .input-field {
-  background: var(--bg-card);
+  background: rgba(15, 30, 50, 0.6);
   border: 1px solid var(--border-subtle);
   color: var(--text-main);
-  padding: 12px 16px;
+  /* More substantial input field */
+  padding: 14px 20px;
   border-radius: var(--radius-md);
-  font-size: 14px;
-  transition: border-color 0.2s;
+  font-size: 15px;
+  transition: border-color 0.25s, box-shadow 0.25s;
 }
 .input-field:focus {
   border-color: var(--border-active);
-  box-shadow: 0 0 8px rgba(217, 160, 91, 0.2);
+  box-shadow: 0 0 14px rgba(217, 160, 91, 0.28), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
 /* Lobby View */
@@ -177,26 +251,47 @@
   justify-content: center;
   padding: 24px;
 }
+
 .lobby-card {
   width: 100%;
-  max-width: 500px;
-  padding: 40px;
+  /* Wider, more spacious card */
+  max-width: 600px;
+  padding: 52px 48px;
   text-align: center;
+  /* Animated border glow on hover */
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
 }
+
+.lobby-card:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    0 20px 60px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(217, 160, 91, 0.3),
+    0 0 40px rgba(217, 160, 91, 0.12);
+  border-color: rgba(217, 160, 91, 0.4);
+}
+
 .lobby-title {
-  font-size: 32px;
-  margin-bottom: 8px;
+  /* Cinzel for the lobby title — premium naval feel */
+  font-family: 'Cinzel', 'Playfair Display', serif;
+  /* Bigger, more commanding title */
+  font-size: 42px;
+  margin-bottom: 10px;
+  text-shadow: 0 0 32px rgba(217, 160, 91, 0.35);
+  letter-spacing: 0.08em;
 }
+
 .lobby-input-group {
   display: flex;
   flex-direction: column;
   gap: 16px;
   margin-top: 32px;
 }
+
 .lobby-divider {
   margin: 32px 0;
   height: 1px;
-  background: var(--border-subtle);
+  background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
   position: relative;
 }
 
@@ -245,7 +340,8 @@
 .roster-table th {
   background: rgba(0, 0, 0, 0.4);
   color: var(--text-muted);
-  font-size: 11px;
+  /* Bigger, easier to read headers */
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   border-bottom: 1px solid var(--border-active);
@@ -253,7 +349,8 @@
 
 .roster-table th,
 .roster-table td {
-  padding: 10px 16px;
+  /* Fatter row height */
+  padding: 14px 20px;
   text-align: left;
   border-bottom: 1px solid rgba(217, 160, 91, 0.1);
 }
@@ -265,10 +362,12 @@
 }
 
 .roster-table tr {
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, box-shadow 0.2s;
 }
 .roster-table tr:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(217, 160, 91, 0.04);
+  /* Side accent glow on hover for a premium feel */
+  box-shadow: inset 3px 0 0 rgba(217, 160, 91, 0.5);
 }
 
 .roster-row-selected {
@@ -281,18 +380,28 @@
   background: rgba(0, 0, 0, 0.5);
   color: var(--text-muted);
   font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 4px 8px;
-  border-radius: 4px;
+  /* Bigger, more legible ship tags */
+  font-size: 12px;
+  padding: 5px 11px;
+  border-radius: 5px;
   border: 1px solid var(--border-subtle);
-  margin: 2px;
+  margin: 3px;
   text-transform: uppercase;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+
+.ship-pill:hover {
+  border-color: rgba(217, 160, 91, 0.5);
+  background: rgba(217, 160, 91, 0.08);
+  transform: translateY(-1px);
 }
 
 .ship-pill-my {
-  color: var(--text-accent);
-  border-color: var(--border-active);
-  background: rgba(217, 160, 91, 0.1);
+  /* Icy nautical blue for the player's own vessel tags */
+  color: var(--color-vessel);
+  border-color: var(--color-vessel);
+  background: rgba(126, 200, 227, 0.1);
+  box-shadow: 0 0 8px var(--color-vessel-glow);
 }
 
 .checkbox-custom {
@@ -312,13 +421,14 @@
 }
 
 .recruit-pool {
-  width: 300px;
+  /* Wider recruit pool panel */
+  width: 340px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 24px;
 }
 
 .recruit-pool-title {
@@ -373,7 +483,9 @@
 .squadron-card {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border-subtle);
+  /* Stronger border for visual separation between cards */
+  border: 1px solid rgba(217, 160, 91, 0.35);
+  border-left: 3px solid rgba(217, 160, 91, 0.4);
   border-radius: var(--radius-lg);
   min-height: 220px;
   background: var(--bg-card);
@@ -381,18 +493,58 @@
   overflow: hidden;
 }
 .squadron-card.inactive {
-  opacity: 0.5;
-  filter: grayscale(0.8);
+  opacity: 0.45;
+  filter: grayscale(0.9);
   background: rgba(0,0,0,0.2);
+  border-left-color: rgba(255,255,255,0.1);
 }
 
 .squadron-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  background: rgba(0, 0, 0, 0.3);
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 14px 18px;
+  /* Much darker header so it clearly separates from the body */
+  background: rgba(0, 0, 0, 0.55);
+  border-bottom: 2px solid rgba(217, 160, 91, 0.3);
+}
+
+/* Squadron name input — affordance: brass underline, subtle hover glow */
+.squadron-header input {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(217, 160, 91, 0.4) !important;
+  border-radius: 0 !important;
+  padding: 2px 4px !important;
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 13px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.squadron-header input:focus {
+  border-bottom-color: var(--border-active) !important;
+  box-shadow: 0 2px 0 rgba(217, 160, 91, 0.3) !important;
+  outline: none;
+}
+
+/* Deactivate/Activate toggle — dim, text-only, only brightens on hover */
+.squadron-toggle-btn {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.squadron-toggle-btn:hover {
+  color: var(--text-muted);
+  border-color: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.05);
 }
 
 .squadron-body-container {
@@ -405,12 +557,21 @@
 
 .squadron-body {
   flex: 1;
-  padding: 16px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   overflow-y: auto;
   align-content: flex-start;
+  /* Minimum height so empty squadrons have a visible drop surface */
+  min-height: 80px;
+}
+
+/* Subtle dashed hint when squadron body is empty (no assigned-player children) */
+.squadron-body:not(:has(.assigned-player)) {
+  border: 1px dashed rgba(217, 160, 91, 0.15);
+  margin: 8px;
+  border-radius: var(--radius-md);
 }
 
 .assigned-player {
@@ -552,38 +713,46 @@
   overflow: hidden;
 }
 
+/* Formation Nav — consistent base style; active gets brass gradient */
 .formation-nav {
   display: flex;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   padding: 16px;
   background: rgba(0, 0, 0, 0.4);
   border-bottom: 1px solid var(--border-subtle);
   z-index: 10;
   flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .formation-nav button {
-  padding: 8px 16px;
-  font-size: 11px;
+  padding: 9px 20px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.06em;
+  /* Ghost base style matching btn-ghost */
   color: var(--text-muted);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(217, 160, 91, 0.2);
-  transition: all 0.2s;
+  border: 1px solid rgba(217, 160, 91, 0.25);
+  background: transparent;
+  transition: all 0.2s ease;
 }
 
 .formation-nav button:hover {
   background: rgba(217, 160, 91, 0.1);
   color: var(--text-main);
+  border-color: rgba(217, 160, 91, 0.45);
 }
 
+/* Active formation button — matches btn-primary brass gradient */
 .formation-nav button.active {
-  background: var(--accent-cyan);
-  color: #000;
-  border-color: var(--border-active);
-  box-shadow: var(--shadow-glow);
+  background: linear-gradient(135deg, #c8853a 0%, #D9A05B 40%, #F7B538 100%);
+  color: #0d1a26;
+  border-color: transparent;
+  box-shadow: 0 0 16px rgba(217, 160, 91, 0.4);
+  font-weight: 800;
 }
 
 .formation-content {
@@ -780,8 +949,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  opacity: 0.9;
-  color: var(--accent-cyan);
+  opacity: 0.95;
+  /* Icy nautical blue for vessel names on formation cards */
+  color: var(--color-vessel);
+  text-shadow: 0 0 8px var(--color-vessel-glow);
   transition: all 0.3s ease;
 }
 
@@ -842,13 +1013,56 @@
 .map-tool-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
 .map-tool-btn.active { background: rgba(217, 160, 91, 0.2); color: var(--text-accent); }
 
-/* Mobile Responsiveness */
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS — 5-tier system
+   320px  → Small phones  (iPhone SE, small Android)
+   480px  → Large phones  (iPhone Pro Max, Galaxy S)
+   768px  → Tablets / landscape phones
+   1024px → Small laptops / tablet landscape
+   1280px → 720p monitors / small desktops
+   1920px → Large monitors (1080p+) / 4K (scale up)
+═══════════════════════════════════════════════════════════ */
+
+/* ── Large monitor / 4K: scale up spacing & widen max-widths ── */
+@media (min-width: 1920px) {
+  .app-header,
+  .tabs-container,
+  .main-content {
+    max-width: 2000px;
+  }
+
+  .app-title  { font-size: 38px; }
+  .tab-btn    { padding: 20px 38px; font-size: 15px; }
+  .app-subtitle { font-size: 16px; }
+
+  .roster-table th,
+  .roster-table td { padding: 16px 24px; font-size: 15px; }
+
+  .lobby-card   { max-width: 780px; padding: 60px 56px; }
+  .lobby-title  { font-size: 52px; }
+}
+
+/* ── 720p desktop / small laptop ── */
+@media (max-width: 1280px) {
+  .app-header,
+  .tabs-container,
+  .main-content {
+    max-width: 1200px;
+  }
+
+  .tab-btn { padding: 16px 24px; font-size: 13px; }
+}
+
+/* ── Tablet / landscape phone (≤1024px) ── */
 @media (max-width: 1024px) {
   .app-header {
     flex-direction: column;
     gap: 16px;
     text-align: center;
+    padding: 16px 20px;
   }
+
+  .app-title { font-size: 26px; }
 
   .assignment-tab {
     flex-direction: column;
@@ -857,119 +1071,139 @@
 
   .recruit-pool {
     width: 100%;
-    max-height: 300px;
+    max-height: 280px;
   }
 
+  .recruit-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-height: 180px;
+  }
+
+  .recruit-card { min-width: 180px; flex: 1; }
+
   .squadron-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     overflow-y: visible;
+  }
+
+  .main-content {
+    height: auto;
+    min-height: calc(100vh - 220px);
   }
 }
 
+/* ── Portrait tablet / large phone (≤768px) ── */
 @media (max-width: 768px) {
   .app-container {
     padding: 12px;
     gap: 12px;
   }
 
-  .app-title {
-    font-size: 18px;
-  }
+  .app-title { font-size: 20px; letter-spacing: 0.08em; }
+  .app-subtitle { font-size: 12px; }
 
+  /* Tabs scroll horizontally — hide scrollbar chrome */
   .tabs-container {
     overflow-x: auto;
     white-space: nowrap;
     padding: 0 8px;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
-
-  .tabs-container::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
-  }
+  .tabs-container::-webkit-scrollbar { display: none; }
 
   .tab-btn {
-    padding: 12px 16px;
+    padding: 11px 16px;
     font-size: 11px;
     flex-shrink: 0;
   }
 
   .main-content {
     height: auto;
-    min-height: calc(100vh - 250px);
+    min-height: calc(100vh - 240px);
   }
 
+  /* Roster panel stacks vertically */
   .roster-top-panel {
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
     align-items: stretch;
   }
+  .roster-controls { flex-direction: column; gap: 8px; }
+  .roster-controls select,
+  .roster-controls .btn-primary { width: 100% !important; }
+  .roster-table-container { overflow-x: auto; }
 
-  .roster-controls {
-    flex-direction: column;
-    gap: 8px;
-  }
+  /* Hide lower-priority roster columns on small screens */
+  .roster-table th:nth-child(4),
+  .roster-table td:nth-child(4) { display: none; }
 
-  .roster-controls select, 
-  .roster-controls .btn-primary {
-    width: 100% !important;
-  }
+  /* Lobby */
+  .lobby-card { padding: 28px 20px; max-width: 100%; }
+  .lobby-title { font-size: 28px; }
 
-  .roster-table-container {
-    overflow-x: auto;
-  }
-
-  .lobby-card {
-    padding: 24px;
-  }
-
-  .lobby-title {
-    font-size: 24px;
-  }
-
-  .map-controls {
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
-  }
-
-  .map-tools {
-    justify-content: center;
-  }
-
+  /* Formation nav wraps */
   .formation-nav {
     flex-wrap: wrap;
     padding: 10px;
     gap: 8px;
   }
-  
   .formation-nav button {
     padding: 8px 12px;
     font-size: 10px;
     flex: 1;
     min-width: 80px;
   }
+
+  /* Map controls stack */
+  .map-controls { flex-direction: column; gap: 12px; align-items: stretch; }
+  .map-tools    { justify-content: center; }
+
+  /* Squadron grid single column */
+  .squadron-grid { grid-template-columns: 1fr; }
 }
 
+/* ── Large phone (≤480px) ── */
 @media (max-width: 480px) {
-  .app-header {
-    padding: 15px;
-  }
+  .app-header { padding: 12px; }
+  .app-title  { font-size: 17px; letter-spacing: 0.06em; }
 
   .connection-status {
     flex-wrap: wrap;
     justify-content: center;
     font-size: 12px;
+    padding: 8px 12px;
   }
+
+  .sandbox-badge,
+  .commander-badge { font-size: 10px; padding: 3px 7px; }
 
   .squadron-header {
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     align-items: stretch;
     text-align: center;
   }
+  .squadron-header input { width: 100% !important; }
 
-  .squadron-header input {
-    width: 100% !important;
-  }
+  .btn-primary { padding: 12px 20px; font-size: 13px; }
+  .input-field  { padding: 11px 14px; font-size: 14px; }
+
+  /* Hide even more columns on tiny phones */
+  .roster-table th:nth-child(3),
+  .roster-table td:nth-child(3),
+  .roster-table th:nth-child(4),
+  .roster-table td:nth-child(4) { display: none; }
+
+  .lobby-title  { font-size: 22px; }
+  .lobby-card   { padding: 20px 16px; }
+  .lobby-input-group { gap: 12px; margin-top: 20px; }
+}
+
+/* ── Small phone (≤360px) ── */
+@media (max-width: 360px) {
+  .app-title   { font-size: 14px; }
+  .tab-btn     { padding: 9px 10px; font-size: 9px; }
+  .lobby-title { font-size: 18px; }
 }

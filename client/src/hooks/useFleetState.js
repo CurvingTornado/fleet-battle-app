@@ -34,6 +34,7 @@ export const useFleetState = () => {
     const [lobbyName, setLobbyName] = useState('');
     const [battleTime, setBattleTime] = useState(null);
     const [fleetRoster, setFleetRoster] = useState([]);
+    const [discordApplicants, setDiscordApplicants] = useState([]);
     const [squadrons, setSquadrons] = useState(INITIAL_SQUADRONS);
     const [activeMap, setActiveMap] = useState('Devios');
 
@@ -113,6 +114,7 @@ export const useFleetState = () => {
         });
 
         socketService.onRosterUpdated((updatedRoster) => setFleetRoster(updatedRoster || []));
+        socketService.onDiscordApplicantsUpdated((applicants) => setDiscordApplicants(applicants || []));
 
         socketService.onSquadronsUpdated((newState) => {
             if (newState && typeof newState === 'object' && Object.keys(newState).length > 0) {
@@ -137,6 +139,7 @@ export const useFleetState = () => {
             socketService.off('battle-time-updated');
             socketService.off('lobby-closed');
             socketService.off('roster-updated');
+            socketService.off('discord-applicants-updated');
             socketService.off('squadrons-updated');
             socketService.off('map-updated');
             socketService.off('marker-added');
@@ -156,6 +159,7 @@ export const useFleetState = () => {
      */
     const clearTacticalData = () => {
         setFleetRoster([]);
+        setDiscordApplicants([]);
         setMarkers([]);
         setLines([]);
         setSquadronPositions({});
@@ -191,7 +195,7 @@ export const useFleetState = () => {
         recentLobbies, setRecentLobbies, createdRooms, setCreatedRooms,
         savedShips, setSavedShips, lobbyName, setLobbyName,
         battleTime, setBattleTime,
-        fleetRoster, setFleetRoster, squadrons, setSquadrons,
+        fleetRoster, setFleetRoster, discordApplicants, setDiscordApplicants, squadrons, setSquadrons,
         activeMap, setActiveMap, markers, setMarkers,
         lines, setLines, squadronPositions, setSquadronPositions,
         localPlayerId, clearTacticalData, enterPlayground

@@ -5,6 +5,7 @@ import { INITIAL_SQUADRONS } from './constants';
 import { initGlobalLogging } from './TacticalLogger';
 import LobbyScreen from './components/LobbyScreen';
 import TacticalDashboard from './components/TacticalDashboard';
+import DiscordGuide from './components/DiscordGuide';
 import './App.css';
 
 // Initialize global error capturing
@@ -22,7 +23,7 @@ function App() {
     recentLobbies, setCreatedRooms,
     savedShips, setSavedShips, lobbyName, setLobbyName,
     battleTime, setBattleTime,
-    fleetRoster, setFleetRoster, squadrons, setSquadrons,
+    fleetRoster, setFleetRoster, discordApplicants, squadrons, setSquadrons,
     activeMap, setActiveMap, markers, setMarkers,
     lines, setLines, squadronPositions, setSquadronPositions,
     localPlayerId, clearTacticalData, enterPlayground
@@ -31,6 +32,7 @@ function App() {
   const [joinToken, setJoinToken] = useState('');
   const [activeTab, setActiveTab] = useState('roster');
   const [viewingSquadron, setViewingSquadron] = useState('Vanguard');
+  const [showDiscordGuide, setShowDiscordGuide] = useState(false);
 
   // --- Mock Socket for Playground Mode ---
   const mockSocket = {
@@ -192,6 +194,10 @@ function App() {
 
   // --- Render ---
 
+  if (showDiscordGuide) {
+    return <DiscordGuide onBack={() => setShowDiscordGuide(false)} />;
+  }
+
   if (!activeRoom) {
     return (
       <LobbyScreen 
@@ -207,6 +213,7 @@ function App() {
         setJoinToken={setJoinToken}
         handleJoinLobby={handleJoinLobby}
         recentLobbies={recentLobbies}
+        onShowDiscordGuide={() => setShowDiscordGuide(true)}
       />
     );
   }
@@ -227,6 +234,7 @@ function App() {
       setViewingSquadron={setViewingSquadron}
       mySquadronKey={mySquadronKey}
       fleetRoster={fleetRoster}
+      discordApplicants={discordApplicants}
       localPlayerId={localPlayerId}
       handleAddShipOffer={handleAddShipOffer}
       handleRemoveShipOffer={handleRemoveShipOffer}
@@ -246,6 +254,7 @@ function App() {
       markers={markers}
       squadronPositions={squadronPositions}
       socket={activeRoom === 'PLAYGROUND' ? mockSocket : socketService.getSocket()}
+      onShowDiscordGuide={() => setShowDiscordGuide(true)}
     />
   );
 }

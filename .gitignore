@@ -6,3 +6,6 @@ logs/
 server/logs/
 *.log
 server/data/
+.env
+server/.env
+client/.env

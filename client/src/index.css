@@ -1,40 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+/* Import Google Fonts: Inter (UI), JetBrains Mono (code), Cinzel (display/headers), Playfair Display (serif fallback) */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 
 :root {
-  /* Color Palette */
-  --bg-main: #1A3B5C; /* Deep Ocean Blue */
-  --bg-panel: rgba(90, 122, 148, 0.65); /* Muted Slate Blue (Glass) */
-  --bg-card: rgba(90, 122, 148, 0.45); /* Muted Slate Blue darker */
+  /* ── Color Palette ── */
+  --bg-main: #1A3B5C;                        /* Deep Ocean Blue */
+  --bg-panel: rgba(90, 122, 148, 0.65);      /* Muted Slate Blue (Glass) */
+  --bg-card: rgba(90, 122, 148, 0.45);       /* Muted Slate Blue darker */
   --bg-card-hover: rgba(52, 126, 179, 0.85); /* Tactical Cerulean */
-  
-  --border-subtle: #8B5024; /* Hull Brown */
-  --border-active: #D9A05B; /* Polished Brass/Gold */
-  --border-highlight: #D9A05B; /* Polished Brass/Gold */
-  
-  --text-main: #FDFDFD; /* Bone White */
-  --text-muted: #E8DAB2; /* Aged Parchment/Canvas */
-  --text-accent: #D9A05B; /* Polished Brass/Gold */
-  --text-error: #D62828; /* Pegboard Red */
-  --text-success: #F7B538; /* Muzzle Flash Amber */
 
-  --accent-cyan: #D9A05B; /* Redirected to Brass/Gold */
-  --accent-cyan-hover: #F7B538; /* Muzzle Flash Amber */
+  --border-subtle: #8B5024;    /* Hull Brown */
+  --border-active: #D9A05B;    /* Polished Brass/Gold */
+  --border-highlight: #D9A05B; /* Polished Brass/Gold */
+
+  --text-main: #FDFDFD;        /* Bone White */
+  --text-muted: #E8DAB2;       /* Aged Parchment/Canvas */
+  --text-accent: #D9A05B;      /* Polished Brass/Gold */
+  --text-error: #D62828;       /* Pegboard Red */
+  --text-success: #F7B538;     /* Muzzle Flash Amber */
+
+  --accent-cyan: #D9A05B;                     /* Redirected to Brass/Gold */
+  --accent-cyan-hover: #F7B538;               /* Muzzle Flash Amber */
   --accent-cyan-glow: rgba(217, 160, 91, 0.4); /* Brass Glow */
 
+  /* Vessel/ship name colour — icy nautical blue, legible on dark panels */
+  --color-vessel: #7EC8E3;
+  --color-vessel-glow: rgba(126, 200, 227, 0.25);
+
+  /* ── Typography ── */
   --font-sans: 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --font-serif: 'Playfair Display', serif;
+  --font-serif: 'Cinzel', 'Playfair Display', serif; /* Primary heading font */
+  --font-display: 'Cinzel', serif;                   /* Premium display / title font */
 
-  /* Layout */
+  /* ── Layout ── */
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
-  
-  --shadow-glass: 0 10px 30px 0 rgba(0, 0, 0, 0.5);
+
+  --shadow-glass: 0 10px 40px rgba(0, 0, 0, 0.6);
   --shadow-glow: 0 0 20px var(--accent-cyan-glow);
 
-  /* Responsive Spacing */
+  /* ── Responsive Spacing ── */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -52,23 +59,59 @@
   }
 }
 
+/* ── Reset ── */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* ── Brass text selection highlight ── */
+::selection {
+  background: rgba(217, 160, 91, 0.35);
+  color: #fff;
+}
+
+/* ── Body: rich multi-layer nautical gradient ── */
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-main);
-  background-image: radial-gradient(circle at 50% 0%, #204b75 0%, #1A3B5C 80%);
+  background-image:
+    radial-gradient(ellipse at 20% 0%, #1d5280 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 0%, #0d2d47 0%, transparent 55%),
+    radial-gradient(circle at 50% 100%, #0f1e30 0%, #1A3B5C 100%);
   background-attachment: fixed;
   color: var(--text-main);
   min-height: 100vh;
+  position: relative;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Subtle animated diagonal shimmer layer — gives the background life */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    rgba(217, 160, 91, 0.025) 50%,
+    transparent 100%
+  );
+  background-size: 400% 400%;
+  animation: shimmerBg 22s ease infinite;
+}
+
+@keyframes shimmerBg {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* ── Headings ── */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   color: var(--text-accent);
@@ -76,6 +119,7 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.05em;
 }
 
+/* ── Base interactive elements ── */
 button {
   font-family: inherit;
   cursor: pointer;
@@ -89,34 +133,39 @@ input, select {
   outline: none;
 }
 
-/* Custom Scrollbar */
+/* ── Custom Scrollbar (brass-themed gradient) ── */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: rgba(26, 59, 92, 0.5);
   border-radius: 5px;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border-subtle);
+  background: linear-gradient(180deg, var(--border-subtle), var(--border-active));
   border-radius: 5px;
-  border: 1px solid rgba(0,0,0,0.2);
+  border: 1px solid rgba(0, 0, 0, 0.3);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--border-active);
+  background: linear-gradient(180deg, var(--border-active), var(--accent-cyan-hover));
 }
 
-/* Utilities */
+/* ── Glass Panel Utility ── */
+/* Deeper blur, subtle inner highlight, brass outer glow ring */
 .glass-panel {
   background: var(--bg-panel);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 2px solid var(--border-subtle);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(217, 160, 91, 0.25);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-glass);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 40px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(217, 160, 91, 0.08);
 }
 
-.text-cyan { color: var(--text-accent); }
-.text-mono { font-family: var(--font-mono); }
-.uppercase { text-transform: uppercase; letter-spacing: 0.05em; }
+/* ── Utility Classes ── */
+.text-cyan  { color: var(--text-accent); }
+.text-mono  { font-family: var(--font-mono); }
+.uppercase  { text-transform: uppercase; letter-spacing: 0.05em; }
