@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, REST, Routes, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, REST, Routes, EmbedBuilder, Partials } = require('discord.js');
 const logger = require('./logger');
 require('dotenv').config();
 
@@ -16,8 +16,11 @@ function initDiscordBot(lobbyManager) {
         intents: [
             GatewayIntentBits.Guilds,
             GatewayIntentBits.GuildMessages,
-            GatewayIntentBits.GuildMessageReactions
-        ]
+            GatewayIntentBits.GuildMessageReactions,
+            GatewayIntentBits.GuildMembers,
+            GatewayIntentBits.MessageContent
+        ],
+        partials: [Partials.Message, Partials.Reaction, Partials.User]
     });
 
     const commands = [
@@ -53,7 +56,8 @@ function initDiscordBot(lobbyManager) {
         if (!interaction.isChatInputCommand()) return;
 
         if (interaction.commandName === 'link_lobby') {
-            const lobbyId = interaction.options.getString('lobby_id').toUpperCase();
+            const rawLobbyId = interaction.options.getString('lobby_id');
+            const lobbyId = rawLobbyId ? rawLobbyId.trim().toUpperCase() : '';
             
             const room = lobbyManager.getRoom(lobbyId);
             if (!room) {
@@ -79,6 +83,16 @@ function initDiscordBot(lobbyManager) {
             try {
                 await reaction.fetch();
             } catch (error) {
+                logger.error(`Error fetching reaction: ${error}`);
+                return;
+            }
+        }
+
+        if (reaction.message.partial) {
+            try {
+                await reaction.message.fetch();
+            } catch (error) {
+                logger.error(`Error fetching message: ${error}`);
                 return;
             }
         }
@@ -109,6 +123,16 @@ function initDiscordBot(lobbyManager) {
             try {
                 await reaction.fetch();
             } catch (error) {
+                logger.error(`Error fetching reaction: ${error}`);
+                return;
+            }
+        }
+
+        if (reaction.message.partial) {
+            try {
+                await reaction.message.fetch();
+            } catch (error) {
+                logger.error(`Error fetching message: ${error}`);
                 return;
             }
         }

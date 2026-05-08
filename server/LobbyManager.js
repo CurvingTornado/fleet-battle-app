@@ -151,6 +151,7 @@ class LobbyManager {
     addDiscordApplicant(roomId, user) {
         const room = this.getRoom(roomId);
         if (room) {
+            if (!room.discordApplicants) room.discordApplicants = [];
             const exists = room.discordApplicants.find(a => a.id === user.id);
             if (!exists) {
                 room.discordApplicants.push(user);
@@ -168,6 +169,7 @@ class LobbyManager {
     removeDiscordApplicant(roomId, userId) {
         const room = this.getRoom(roomId);
         if (room) {
+            if (!room.discordApplicants) room.discordApplicants = [];
             room.discordApplicants = room.discordApplicants.filter(a => a.id !== userId);
             this.saveState();
             if (this.io) {

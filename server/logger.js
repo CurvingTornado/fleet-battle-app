@@ -24,6 +24,16 @@ const logger = {
     },
 
     /**
+     * Log a server-side warning
+     */
+    warn: (message, context = '') => {
+        const timestamp = new Date().toISOString();
+        const logLine = `[${timestamp}] WARN: ${message} ${context ? JSON.stringify(context) : ''}\n`;
+        console.warn(logLine.trim());
+        fs.appendFileSync(serverLogPath, logLine);
+    },
+
+    /**
      * Log a server-side error
      */
     error: (message, error = null) => {
