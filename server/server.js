@@ -12,6 +12,13 @@ const squadronHandler = require('./socketHandlers/squadronHandler');
 const mapHandler = require('./socketHandlers/mapHandler');
 const { initDiscordBot } = require('./discordBot');
 
+// --- Startup Audit ---
+logger.info('SYSTEM: Starting Fleet Command Server Audit...');
+logger.info(`SYSTEM: Environment: ${process.env.NODE_ENV || 'development'}`);
+logger.info(`SYSTEM: Port: ${process.env.PORT || 3001}`);
+logger.info(`SYSTEM: Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
+logger.info(`SYSTEM: Discord Token Present: ${process.env.DISCORD_TOKEN ? 'YES' : 'NO'}`);
+
 /**
  * Guilliman's Fleet Command - Server
  * 

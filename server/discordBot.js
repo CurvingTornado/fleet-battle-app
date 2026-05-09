@@ -8,10 +8,15 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
  * Registers slash commands and listens for reactions to sync with LobbyManager.
  */
 function initDiscordBot(lobbyManager) {
-    if (!process.env.DISCORD_TOKEN) {
-        logger.warn('DISCORD_TOKEN not provided. Discord bot will not start.');
+    logger.info('DISCORD: Initializing bot sequence...');
+    
+    const token = process.env.DISCORD_TOKEN;
+    if (!token) {
+        logger.warn('DISCORD: DISCORD_TOKEN is missing from environment variables. Bot will not start.');
         return null;
     }
+
+    logger.info(`DISCORD: Token detected (Length: ${token.length}). Attempting client instantiation...`);
 
     const client = new Client({
         intents: [
@@ -158,8 +163,16 @@ function initDiscordBot(lobbyManager) {
         }
     });
 
-    client.login(process.env.DISCORD_TOKEN).catch(err => {
-        logger.error(`Discord login failed: ${err.message}`);
+    logger.info('DISCORD: Attempting login...');
+    client.login(process.env.DISCORD_TOKEN).then(() => {
+        logger.info('DISCORD: Login promise resolved.');
+    }).catch(err => {
+        logger.error(`DISCORD: Login failed critical error: ${err.message}`);
+    });
+
+    // Global error handlers for this process to catch Discord.js silent crashes
+    process.on('unhandledRejection', error => {
+        logger.error('DISCORD: Unhandled promise rejection:', error);
     });
 
     lobbyManager.onRoomDeleted = async (room) => {
