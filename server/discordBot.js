@@ -10,11 +10,14 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 function initDiscordBot(lobbyManager) {
     logger.info('DISCORD: Initializing bot sequence...');
     
-    const token = process.env.DISCORD_TOKEN;
+    let token = process.env.DISCORD_TOKEN;
     if (!token) {
         logger.warn('DISCORD: DISCORD_TOKEN is missing from environment variables. Bot will not start.');
         return null;
     }
+
+    // SANITIZATION: Strip quotes, spaces, or newlines that often get pasted accidentally
+    token = token.trim().replace(/^["']|["']$/g, '');
 
     logger.info(`DISCORD: Token detected (Length: ${token.length}). Attempting client instantiation...`);
 
@@ -59,6 +62,8 @@ function initDiscordBot(lobbyManager) {
     });
 
     client.on('interactionCreate', async interaction => {
+        logger.info(`DISCORD: Received interaction: ${interaction.type} (Command: ${interaction.commandName || 'N/A'}) from ${interaction.user.username}`);
+        
         if (!interaction.isChatInputCommand()) return;
 
         if (interaction.commandName === 'link_lobby') {
@@ -164,10 +169,14 @@ function initDiscordBot(lobbyManager) {
     });
 
     logger.info('DISCORD: Attempting login...');
-    client.login(process.env.DISCORD_TOKEN).then(() => {
+    client.login(token).then(() => {
         logger.info('DISCORD: Login promise resolved.');
     }).catch(err => {
-        logger.error(`DISCORD: Login failed critical error: ${err.message}`);
+        if (err.message.includes('PRIVILEGED_INTENTS')) {
+            logger.error('DISCORD: LOGIN FAILED! You must enable "Message Content Intent" in the Discord Developer Portal under the "Bot" tab.');
+        } else {
+            logger.error(`DISCORD: Login failed critical error: ${err.message}`);
+        }
     });
 
     // Global error handlers for this process to catch Discord.js silent crashes

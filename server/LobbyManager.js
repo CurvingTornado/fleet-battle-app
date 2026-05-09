@@ -85,11 +85,7 @@ class LobbyManager {
      * @returns {Object|undefined} The room state object, or undefined if it doesn't exist.
      */
     getRoom(roomId) {
-        const room = this.rooms[roomId];
-        if (!room) {
-            logger.warn(`LOBBY: Room lookup failed for ID: ${roomId}. Active rooms: ${Object.keys(this.rooms).join(', ')}`);
-        }
-        return room;
+        return this.rooms[roomId];
     }
 
     /**
