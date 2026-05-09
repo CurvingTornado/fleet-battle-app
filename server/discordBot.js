@@ -1,6 +1,7 @@
 const { Client, GatewayIntentBits, REST, Routes, EmbedBuilder, Partials } = require('discord.js');
 const logger = require('./logger');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 /**
  * Initializes and connects the Discord bot.

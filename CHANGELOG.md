@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1] - 2026-05-09
+
+### Fixed
+- **Server Initialization:** Hotfixed `.env` path resolution. `dotenv` now explicitly uses an absolute path (`path.join(__dirname, '.env')`). This prevents silent failures (such as the Discord bot silently aborting and CORS blocking connections) when the server is started from a parent directory instead of the `server/` folder directly.
+
+
+
 ## [2.3.0] - 2026-05-09
 
 ### Fixed
