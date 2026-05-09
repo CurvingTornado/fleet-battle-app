@@ -72,8 +72,11 @@ module.exports = function(io, socket, lobbyManager) {
      * This indicates if a player is actively participating in the upcoming operation.
      */
     socket.on('toggle-selection', ({ roomId, playerId }) => {
+        if (socket.currentRoomId !== roomId) return;
         const room = lobbyManager.getRoom(roomId);
         if (room) {
+            // Only the player themselves or the commander can toggle selection
+            if (socket.currentPlayerId !== playerId && socket.currentPlayerId !== room.commanderId) return;
             const player = room.roster.find(p => p.id === playerId);
             if (player) {
                 player.selected = !player.selected;
@@ -87,6 +90,8 @@ module.exports = function(io, socket, lobbyManager) {
      * Updates the list of ships a player is offering to bring to the battle.
      */
     socket.on('update-offers', ({ roomId, playerId, offers }) => {
+        if (socket.currentRoomId !== roomId) return;
+        if (socket.currentPlayerId !== playerId) return;
         const room = lobbyManager.getRoom(roomId);
         if (room) {
             const player = room.roster.find(p => p.id === playerId);
@@ -103,8 +108,10 @@ module.exports = function(io, socket, lobbyManager) {
      * Typically executed by the Commander.
      */
     socket.on('commander-assign-ship', ({ roomId, playerId, ship }) => {
+        if (socket.currentRoomId !== roomId) return;
         const room = lobbyManager.getRoom(roomId);
         if (room) {
+            if (room.commanderId !== socket.currentPlayerId) return;
             const player = room.roster.find(p => p.id === playerId);
             if (player) {
                 player.ship = ship;
@@ -118,8 +125,10 @@ module.exports = function(io, socket, lobbyManager) {
      * Updates a player's tactical role (e.g., 'Member', 'Squadron Lead').
      */
     socket.on('update-role', ({ roomId, playerId, role }) => {
+        if (socket.currentRoomId !== roomId) return;
         const room = lobbyManager.getRoom(roomId);
         if (room) {
+            if (room.commanderId !== socket.currentPlayerId) return;
             const player = room.roster.find(p => p.id === playerId);
             if (player) {
                 player.role = role;
@@ -133,8 +142,10 @@ module.exports = function(io, socket, lobbyManager) {
      * Updates the human-readable display name of the lobby.
      */
     socket.on('update-lobby-name', ({ roomId, name }) => {
+        if (socket.currentRoomId !== roomId) return;
         const room = lobbyManager.getRoom(roomId);
         if (room) {
+            if (room.commanderId !== socket.currentPlayerId) return;
             room.lobbyName = name;
             lobbyManager.saveState();
             io.to(roomId).emit('lobby-name-updated', name);
@@ -145,10 +156,11 @@ module.exports = function(io, socket, lobbyManager) {
      * Sets the planned battle time. This automatically recalculates the lobby's deletion timer.
      */
     socket.on('set-battle-time', ({ roomId, battleTime }) => {
-        lobbyManager.updateBattleTime(roomId, battleTime);
-        io.to(roomId).emit('battle-time-updated', battleTime);
+        if (socket.currentRoomId !== roomId) return;
         const room = lobbyManager.getRoom(roomId);
-        if (room) {
+        if (room && room.commanderId === socket.currentPlayerId) {
+            lobbyManager.updateBattleTime(roomId, battleTime);
+            io.to(roomId).emit('battle-time-updated', battleTime);
             logger.info(`LOBBY: Battle Time for ${roomId} updated to ${battleTime}. Deletes at ${new Date(room.deletionTime).toISOString()}`);
         }
     });

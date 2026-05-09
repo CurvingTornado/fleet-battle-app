@@ -31,6 +31,8 @@ class LobbyManager {
         this.rooms = {};
         /** @type {Object.<string, NodeJS.Timeout>} Dictionary of active deletion timers */
         this.deletionTimers = {};
+        /** @type {NodeJS.Timeout|null} Debounce timer for saving state */
+        this.saveTimer = null;
         
         // Restore state from disk immediately upon instantiation
         this.loadState();
@@ -88,13 +90,24 @@ class LobbyManager {
     /**
      * Serializes and saves the current state of all rooms to `data/lobbies.json`.
      * Called automatically after any state mutation.
+     * Uses a debounced asynchronous write to avoid blocking the event loop.
      */
     saveState() {
-        try {
-            fs.writeFileSync(LOBBIES_FILE, JSON.stringify(this.rooms, null, 2), 'utf8');
-        } catch (error) {
-            logger.error(`Failed to save lobbies state: ${error.message}`);
+        if (this.saveTimer) {
+            clearTimeout(this.saveTimer);
         }
+        this.saveTimer = setTimeout(() => {
+            try {
+                const data = JSON.stringify(this.rooms, null, 2);
+                fs.writeFile(LOBBIES_FILE, data, 'utf8', (error) => {
+                    if (error) {
+                        logger.error(`Failed to save lobbies state asynchronously: ${error.message}`);
+                    }
+                });
+            } catch (error) {
+                logger.error(`Failed to serialize lobbies state: ${error.message}`);
+            }
+        }, 2000); // 2-second debounce
     }
 
     /**
@@ -214,6 +227,9 @@ class LobbyManager {
                 this.io.to(roomId).emit('lobby-closed');
                 // Drop all sockets from the room channel
                 this.io.in(roomId).socketsLeave(roomId);
+            }
+            if (this.onRoomDeleted) {
+                this.onRoomDeleted(this.rooms[roomId]);
             }
             delete this.rooms[roomId];
             

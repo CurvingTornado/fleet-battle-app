@@ -11,12 +11,15 @@ import './App.css';
 // Initialize global error capturing
 initGlobalLogging();
 
+import { useFleetContext } from './hooks/FleetContext';
+
 /**
  * Main Application Component
  * 
  * Orchestrates the lobby and main tactical interface using modular hooks and services.
  */
 function App() {
+  const fleetState = useFleetContext();
   const {
     isConnected, activeRoom, setActiveRoom, isCommander, setIsCommander,
     commanderName, setCommanderName, playerTag, setPlayerTag,
@@ -27,7 +30,7 @@ function App() {
     activeMap, setActiveMap, markers, setMarkers,
     lines, setLines, squadronPositions, setSquadronPositions,
     localPlayerId, clearTacticalData, enterPlayground
-  } = useFleetState();
+  } = fleetState;
 
   const [joinToken, setJoinToken] = useState('');
   const [activeTab, setActiveTab] = useState('roster');
@@ -46,11 +49,6 @@ function App() {
       else if (event === 'clear-board') { setMarkers([]); setLines([]); }
     }
   };
-
-  // Determine which squadron (if any) the local player is currently assigned to.
-  const mySquadronKey = Object.keys(squadrons).find(key => 
-    (squadrons[key]?.players || []).includes(localPlayerId)
-  );
 
   // --- Handlers ---
 
@@ -190,8 +188,6 @@ function App() {
     if (activeRoom !== 'PLAYGROUND') socketService.updateSquadrons(activeRoom, newSquadrons);
   };
 
-  const unassignedPlayers = fleetRoster.filter(p => p.selected && !Object.values(squadrons).flatMap(sq => sq?.players || []).includes(p.id));
-
   // --- Render ---
 
   if (showDiscordGuide) {
@@ -220,39 +216,23 @@ function App() {
 
   return (
     <TacticalDashboard 
-      isConnected={isConnected}
-      activeRoom={activeRoom}
-      isCommander={isCommander}
-      lobbyName={lobbyName}
       handleRenameLobby={handleRenameLobby}
-      battleTime={battleTime}
       handleBattleTimeChange={handleBattleTimeChange}
       getLocalDatetimeString={getLocalDatetimeString}
       activeTab={activeTab}
       setActiveTab={setActiveTab}
       viewingSquadron={viewingSquadron}
       setViewingSquadron={setViewingSquadron}
-      mySquadronKey={mySquadronKey}
-      fleetRoster={fleetRoster}
-      discordApplicants={discordApplicants}
-      localPlayerId={localPlayerId}
       handleAddShipOffer={handleAddShipOffer}
       handleRemoveShipOffer={handleRemoveShipOffer}
       handleToggleSelection={handleToggleSelection}
       handleCommanderSelectShip={handleCommanderSelectShip}
-      unassignedPlayers={unassignedPlayers}
-      squadrons={squadrons}
-      INITIAL_SQUADRONS={INITIAL_SQUADRONS}
       handleDrop={handleDrop}
       handleToggleSquadron={handleToggleSquadron}
       handleFormationChange={handleFormationChange}
       handleRenameSquadron={handleRenameSquadron}
       handleChangeRole={handleChangeRole}
       handleReorderSquadron={handleReorderSquadron}
-      activeMap={activeMap}
-      lines={lines}
-      markers={markers}
-      squadronPositions={squadronPositions}
       socket={activeRoom === 'PLAYGROUND' ? mockSocket : socketService.getSocket()}
       onShowDiscordGuide={() => setShowDiscordGuide(true)}
     />

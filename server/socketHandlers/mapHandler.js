@@ -11,6 +11,7 @@ module.exports = function(io, socket, lobbyManager) {
      * Changes the background map image for the entire room.
      */
     socket.on('change-map', ({ roomId, mapName }) => {
+        if (socket.currentRoomId !== roomId) return;
         const room = lobbyManager.getRoom(roomId);
         if (room) {
             room.currentMap = mapName;
@@ -23,6 +24,7 @@ module.exports = function(io, socket, lobbyManager) {
      * Adds a generic ping marker to the tactical map.
      */
     socket.on('add-marker', ({ roomId, markerData }) => {
+        if (socket.currentRoomId !== roomId) return;
         const room = lobbyManager.getRoom(roomId);
         if (room) {
             room.markers.push(markerData);
@@ -35,6 +37,7 @@ module.exports = function(io, socket, lobbyManager) {
      * Removes a specific ping marker from the map.
      */
     socket.on('delete-marker', ({ roomId, markerId }) => {
+        if (socket.currentRoomId !== roomId) return;
         const room = lobbyManager.getRoom(roomId);
         if (room) {
             room.markers = room.markers.filter(m => m.id !== markerId);
@@ -47,6 +50,7 @@ module.exports = function(io, socket, lobbyManager) {
      * Adds a freehand drawn line segment to the tactical map.
      */
     socket.on('add-line', ({ roomId, line }) => {
+        if (socket.currentRoomId !== roomId) return;
         const room = lobbyManager.getRoom(roomId);
         if (room) {
             room.lines.push(line);
@@ -59,6 +63,7 @@ module.exports = function(io, socket, lobbyManager) {
      * Deletes a specific drawn line segment.
      */
     socket.on('delete-line', ({ roomId, lineId }) => {
+        if (socket.currentRoomId !== roomId) return;
         const room = lobbyManager.getRoom(roomId);
         if (room) {
             room.lines = room.lines.filter(l => l.id !== lineId);
@@ -71,6 +76,7 @@ module.exports = function(io, socket, lobbyManager) {
      * Updates the custom X/Y coordinates of a draggable squadron label.
      */
     socket.on('update-squadron-position', ({ roomId, sqKey, position }) => {
+        if (socket.currentRoomId !== roomId) return;
         const room = lobbyManager.getRoom(roomId);
         if (room) {
             room.squadronPositions[sqKey] = position;
@@ -84,8 +90,9 @@ module.exports = function(io, socket, lobbyManager) {
      * Typically executed by the Commander to reset the strategy board.
      */
     socket.on('clear-board', (roomId) => {
+        if (socket.currentRoomId !== roomId) return;
         const room = lobbyManager.getRoom(roomId);
-        if (room) {
+        if (room && room.commanderId === socket.currentPlayerId) {
             room.markers = [];
             room.lines = [];
             lobbyManager.saveState();

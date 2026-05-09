@@ -42,43 +42,58 @@ import TacticalMap from '../TacticalMap';
  * @param {Object} props.squadronPositions - Position data for squadrons on the map
  * @param {Object} props.socket - WebSocket connection object for real-time communication
  */
+import { useFleetContext } from '../hooks/FleetContext';
+
 function TacticalDashboard({
-  isConnected,
-  activeRoom,
-  isCommander,
-  lobbyName,
   handleRenameLobby,
-  battleTime,
   handleBattleTimeChange,
   getLocalDatetimeString,
   activeTab,
   setActiveTab,
   viewingSquadron,
   setViewingSquadron,
-  mySquadronKey,
-  fleetRoster,
-  discordApplicants,
-  localPlayerId,
   handleAddShipOffer,
   handleRemoveShipOffer,
   handleToggleSelection,
   handleCommanderSelectShip,
-  unassignedPlayers,
-  squadrons,
-  INITIAL_SQUADRONS,
   handleDrop,
   handleToggleSquadron,
   handleFormationChange,
   handleRenameSquadron,
   handleChangeRole,
   handleReorderSquadron,
-  activeMap,
-  lines,
-  markers,
-  squadronPositions,
   socket,
   onShowDiscordGuide
 }) {
+  const {
+    isConnected,
+    activeRoom,
+    isCommander,
+    lobbyName,
+    battleTime,
+    fleetRoster,
+    discordApplicants,
+    localPlayerId,
+    squadrons,
+    activeMap,
+    lines,
+    markers,
+    squadronPositions
+  } = useFleetContext();
+
+  const mySquadronKey = Object.keys(squadrons).find(key => 
+    (squadrons[key]?.players || []).includes(localPlayerId)
+  );
+  
+  const INITIAL_SQUADRONS = {
+      "Vanguard": { name: "Vanguard", active: true, formation: "Line Ahead", players: [] },
+      "Center/Main Body": { name: "Center/Main Body", active: true, formation: "Line Ahead", players: [] },
+      "Rear": { name: "Rear", active: true, formation: "Line Ahead", players: [] },
+      "Screen": { name: "Screen", active: true, formation: "Line Ahead", players: [] },
+      "Reserve": { name: "Reserve", active: true, formation: "Line Ahead", players: [] }
+  };
+  const unassignedPlayers = fleetRoster.filter(p => p.selected && !Object.values(squadrons).flatMap(sq => sq?.players || []).includes(p.id));
+
   return (
     <div className="app-container">
       {/* Header section with lobby name, connection status, and battle time */}

@@ -73,6 +73,10 @@ function initDiscordBot(lobbyManager) {
 
             const message = await interaction.reply({ embeds: [embed], fetchReply: true });
             await message.react('🚢');
+            
+            room.discordMessageId = message.id;
+            room.discordChannelId = message.channelId;
+            lobbyManager.saveState();
         }
     });
 
@@ -153,6 +157,26 @@ function initDiscordBot(lobbyManager) {
     client.login(process.env.DISCORD_TOKEN).catch(err => {
         logger.error(`Discord login failed: ${err.message}`);
     });
+
+    lobbyManager.onRoomDeleted = async (room) => {
+        if (room.discordChannelId && room.discordMessageId) {
+            try {
+                const channel = await client.channels.fetch(room.discordChannelId);
+                if (channel) {
+                    const message = await channel.messages.fetch(room.discordMessageId);
+                    if (message) {
+                        const embed = EmbedBuilder.from(message.embeds[0])
+                            .setTitle(`[CONCLUDED] ${room.lobbyName || 'Untitled'}`)
+                            .setDescription(`This operation has concluded or the lobby has expired.`)
+                            .setColor(0x808080);
+                        await message.edit({ embeds: [embed] });
+                    }
+                }
+            } catch (err) {
+                logger.error(`Failed to update concluded embed for lobby ${room.lobbyName}: ${err.message}`);
+            }
+        }
+    };
 
     return client;
 }

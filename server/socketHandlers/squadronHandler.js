@@ -13,8 +13,10 @@ module.exports = function(io, socket, lobbyManager) {
      * renaming squadrons, and changing formations.
      */
     socket.on('update-squadrons', ({ roomId, newState }) => {
+        if (socket.currentRoomId !== roomId) return;
         const room = lobbyManager.getRoom(roomId);
         if (room) {
+            if (room.commanderId !== socket.currentPlayerId) return;
             room.squadrons = newState;
             lobbyManager.saveState();
             io.to(roomId).emit('squadrons-updated', newState);
