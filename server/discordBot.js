@@ -19,12 +19,11 @@ function initDiscordBot(lobbyManager) {
 
     token = token.trim().replace(/^["']|["']$/g, '');
     logger.info(`DISCORD: Sanitized Token Length: ${token.length}`);
+    logger.info(`DISCORD: Token Prefix Check: ${token.substring(0, 5)}...`);
 
     const client = new Client({
         intents: [
-            GatewayIntentBits.Guilds,
-            GatewayIntentBits.GuildMessages,
-            GatewayIntentBits.GuildMessageReactions
+            GatewayIntentBits.Guilds
         ],
         partials: [Partials.Message, Partials.Reaction, Partials.User]
     });
