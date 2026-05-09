@@ -61,14 +61,17 @@ function initDiscordBot(lobbyManager) {
             
             const room = lobbyManager.getRoom(lobbyId);
             if (!room) {
+                logger.warn(`DISCORD: Command /link_lobby failed - Room ${lobbyId} not found.`);
                 await interaction.reply({ content: `Lobby \`${lobbyId}\` does not exist or has expired.`, ephemeral: true });
                 return;
             }
 
+            logger.info(`DISCORD: Linking lobby ${lobbyId} to channel ${interaction.channelId}`);
+
             const embed = new EmbedBuilder()
                 .setColor(0x0099FF)
                 .setTitle(`Fleet Command Operation: ${room.lobbyName || 'Untitled'}`)
-                .setDescription(`Commander: **${room.commanderId}**\n\nReact with 🚢 to sign up for this operation!`)
+                .setDescription(`Commander: **${room.commanderName || room.commanderId}**\n\nReact with 🚢 to sign up for this operation!`)
                 .setFooter({ text: `Lobby ID: ${lobbyId}` });
 
             const message = await interaction.reply({ embeds: [embed], fetchReply: true });

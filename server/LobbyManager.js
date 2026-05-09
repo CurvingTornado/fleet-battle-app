@@ -63,6 +63,7 @@ class LobbyManager {
             this.rooms[roomId] = {
                 lobbyName: "",
                 commanderId: commanderId,
+                commanderName: name || "Unknown",
                 roster: [],
                 squadrons: this.getDefaultSquadrons(),
                 currentMap: 'Devios',
@@ -84,7 +85,11 @@ class LobbyManager {
      * @returns {Object|undefined} The room state object, or undefined if it doesn't exist.
      */
     getRoom(roomId) {
-        return this.rooms[roomId];
+        const room = this.rooms[roomId];
+        if (!room) {
+            logger.warn(`LOBBY: Room lookup failed for ID: ${roomId}. Active rooms: ${Object.keys(this.rooms).join(', ')}`);
+        }
+        return room;
     }
 
     /**
