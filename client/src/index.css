@@ -3,24 +3,23 @@
 
 :root {
   /* ── Color Palette ── */
-  --bg-main: #1A3B5C;                        /* Deep Ocean Blue */
-  --bg-panel: rgba(90, 122, 148, 0.65);      /* Muted Slate Blue (Glass) */
-  --bg-card: rgba(90, 122, 148, 0.45);       /* Muted Slate Blue darker */
-  --bg-card-hover: rgba(52, 126, 179, 0.85); /* Tactical Cerulean */
+  --bg-main: #0B1E33;                        /* Deeper Midnight Navy */
+  --bg-panel: rgba(13, 31, 51, 0.75);        /* Glass Navy */
+  --bg-card: rgba(13, 31, 51, 0.55);         /* Darker Glass */
+  --bg-card-hover: rgba(22, 53, 89, 0.9);    /* High-contrast Cerulean */
 
-  --border-subtle: #8B5024;    /* Hull Brown */
-  --border-active: #D9A05B;    /* Polished Brass/Gold */
-  --border-highlight: #D9A05B; /* Polished Brass/Gold */
+  --border-subtle: rgba(217, 160, 91, 0.15); /* Faint Brass */
+  --border-active: #D9A05B;                  /* Polished Brass */
+  --border-highlight: #F7B538;               /* Glowing Amber */
 
-  --text-main: #FDFDFD;        /* Bone White */
-  --text-muted: #E8DAB2;       /* Aged Parchment/Canvas */
-  --text-accent: #D9A05B;      /* Polished Brass/Gold */
-  --text-error: #D62828;       /* Pegboard Red */
-  --text-success: #22C55E;     /* Tactical Command Green */
+  --text-main: #E0E6ED;                      /* Slate White */
+  --text-muted: #A0B3C6;                     /* Muted Steel */
+  --text-accent: #D9A05B;                    /* Polished Brass */
+  --text-success: #00FF9C;                   /* Matrix Green */
+  --text-error: #FF4D4D;                     /* Emergency Red */
 
-  --accent-cyan: #D9A05B;                     /* Redirected to Brass/Gold */
-  --accent-cyan-hover: #F7B538;               /* Muzzle Flash Amber */
-  --accent-cyan-glow: rgba(217, 160, 91, 0.4); /* Brass Glow */
+  --accent-cyan: #00D2FF;                    /* Data Cyan */
+  --accent-cyan-glow: rgba(0, 210, 255, 0.3);
 
   /* Vessel/ship name colour — icy nautical blue, legible on dark panels */
   --color-vessel: #7EC8E3;
@@ -33,13 +32,13 @@
   --font-display: 'Cinzel', serif;                   /* Premium display / title font */
 
   /* ── Layout ── */
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
 
-  --shadow-glass: 0 10px 40px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 20px var(--accent-cyan-glow);
+  --shadow-tactical: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(217, 160, 91, 0.1);
+  --shadow-glow-brass: 0 0 15px rgba(217, 160, 91, 0.2);
 
   /* ── Responsive Spacing ── */
   --spacing-xs: 4px;
@@ -77,9 +76,9 @@ body {
   font-family: var(--font-sans);
   background-color: var(--bg-main);
   background-image:
-    radial-gradient(ellipse at 20% 0%, #1d5280 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 0%, #0d2d47 0%, transparent 55%),
-    radial-gradient(circle at 50% 100%, #0f1e30 0%, #1A3B5C 100%);
+    radial-gradient(ellipse at 20% 0%, #0d2d47 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 0%, #06121e 0%, transparent 55%),
+    radial-gradient(circle at 50% 100%, #0b1e33 0%, #040a12 100%);
   background-attachment: fixed;
   color: var(--text-main);
   min-height: 100vh;
@@ -98,7 +97,7 @@ body::before {
   background: linear-gradient(
     135deg,
     transparent 0%,
-    rgba(217, 160, 91, 0.025) 50%,
+    rgba(217, 160, 91, 0.02) 50%,
     transparent 100%
   );
   background-size: 400% 400%;
@@ -133,36 +132,39 @@ input, select {
   outline: none;
 }
 
-/* ── Custom Scrollbar (brass-themed gradient) ── */
+/* ── Custom Scrollbar (tactical thin) ── */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(26, 59, 92, 0.5);
-  border-radius: 5px;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--border-subtle), var(--border-active));
-  border-radius: 5px;
-  border: 1px solid rgba(0, 0, 0, 0.3);
+  background: var(--border-subtle);
+  border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, var(--border-active), var(--accent-cyan-hover));
+  background: var(--border-active);
 }
 
 /* ── Glass Panel Utility ── */
-/* Deeper blur, subtle inner highlight, brass outer glow ring */
 .glass-panel {
   background: var(--bg-panel);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(217, 160, 91, 0.25);
-  border-radius: var(--radius-lg);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 10px 40px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(217, 160, 91, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-tactical);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
 }
 
 /* ── Utility Classes ── */

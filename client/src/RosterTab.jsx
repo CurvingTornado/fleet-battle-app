@@ -5,19 +5,13 @@ import { SHIP_REGISTRY, getShipIcon } from './constants';
  * Roster Tab Component
  * 
  * Handles player self-registration and commander's fleet management.
- * Features:
- * - Vessel Registration: Players can select ships they are willing to bring to the battle.
- * - Live Roster Table: Displays all players, their status, ship offers, and assigned roles.
- * - Commander Controls: Lead can mark players as 'Deploying' (selected) and assign specific ships.
  */
-
 const RosterTab = ({ fleetRoster, discordApplicants = [], localPlayerId, isCommander, onAddShipOffer, onRemoveShipOffer, onToggleSelection, onAssignShip }) => {
   const [selectedLocalRate, setSelectedLocalRate] = useState('');
   const [selectedLocalShip, setSelectedLocalShip] = useState('');
   const [selectedLocalBuild, setSelectedLocalBuild] = useState('Standard');
   const [isDiscordPoolOpen, setIsDiscordPoolOpen] = useState(true);
   
-  // Find the current player's data in the roster
   const me = fleetRoster.find(p => p.id === localPlayerId);
 
   const handleAddClick = () => {
@@ -30,34 +24,33 @@ const RosterTab = ({ fleetRoster, discordApplicants = [], localPlayerId, isComma
   return (
     <div className="roster-tab">
       
-      {/* 1. Registration Panel (For all players) */}
-      <div className="roster-top-panel glass-panel">
-        <div style={{ flex: 1, minWidth: '250px' }}>
-          <h2 style={{ fontSize: '14px', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--text-accent)', textTransform: 'uppercase' }}>Vessel Application</h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '12px' }}>
+      {/* 1. Registration Panel */}
+      <div className="roster-registration-panel glass-panel">
+        <div className="registration-info">
+          <h2 className="registration-title">Vessel Application</h2>
+          <div className="applied-vessels-list">
             {me?.offers?.map(ship => (
-              <span 
+              <button 
                 key={ship} 
                 className="ship-pill ship-pill-my"
                 onClick={() => onRemoveShipOffer(ship)}
-                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                title="Click to remove"
               >
-                {ship} <span style={{ opacity: 0.5 }}>✕</span>
-              </span>
+                {ship} <span className="remove-icon">✕</span>
+              </button>
             ))}
             {(!me?.offers || me.offers.length === 0) && (
-              <span style={{ fontSize: '11px', opacity: 0.5, fontStyle: 'italic' }}>No vessels registered for this operation.</span>
+              <p className="no-offers-hint">No vessels registered for this operation.</p>
             )}
           </div>
         </div>
         
-        <div className="roster-controls" style={{ flex: 1.5 }}>
-          <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+        <div className="registration-controls">
+          <div className="controls-row">
             <select 
               value={selectedLocalRate} 
               onChange={(e) => setSelectedLocalRate(e.target.value)} 
               className="input-field text-mono uppercase"
-              style={{ flex: 1, fontSize: '11px' }}
             >
               <option value="">-- RATE --</option>
               {Object.keys(SHIP_REGISTRY).map(rate => (
@@ -69,7 +62,6 @@ const RosterTab = ({ fleetRoster, discordApplicants = [], localPlayerId, isComma
               value={selectedLocalBuild} 
               onChange={(e) => setSelectedLocalBuild(e.target.value)} 
               className="input-field text-mono uppercase"
-              style={{ flex: 1, fontSize: '11px' }}
             >
               <option value="Standard">STANDARD</option>
               <option value="Brawler">BRAWLER</option>
@@ -83,7 +75,6 @@ const RosterTab = ({ fleetRoster, discordApplicants = [], localPlayerId, isComma
             onChange={(e) => setSelectedLocalShip(e.target.value)} 
             disabled={!selectedLocalRate}
             className="input-field text-mono uppercase"
-            style={{ width: '100%', fontSize: '12px' }}
           >
             <option value="Pending Assignment">{selectedLocalRate ? '-- SELECT VESSEL --' : '-- SELECT RATE FIRST --'}</option>
             {selectedLocalRate && SHIP_REGISTRY[selectedLocalRate].map(ship => (
@@ -94,30 +85,27 @@ const RosterTab = ({ fleetRoster, discordApplicants = [], localPlayerId, isComma
           <button 
             onClick={handleAddClick}
             className="btn-primary"
-            style={{ width: '100%', padding: '10px', fontSize: '12px' }}
           >
             APPLY TO OPERATION
           </button>
         </div>
       </div>
 
-      {/* 2. Roster Table (Order of Battle) */}
-      <div className="roster-table-container glass-panel">
+      {/* 2. Roster Table */}
+      <div className="roster-table-container">
         <table className="roster-table">
           <thead>
             <tr>
               {isCommander && <th style={{ width: '50px' }}>DEPLOY</th>}
-              <th>COMMANDER / SHIP TAG</th>
-              <th>AVAILABLE VESSELS (OFFERS)</th>
-              <th>ASSIGNED ROLE</th>
+              <th>COMMANDER</th>
+              <th>AVAILABLE VESSELS</th>
+              <th>ROLE</th>
               <th style={{ width: '250px' }}>ASSIGNED SHIP</th>
             </tr>
           </thead>
           <tbody>
             {fleetRoster.map(p => (
-              <tr key={p.id} className={`${p.id === localPlayerId ? 'roster-row-selected' : ''} ${p.selected ? 'deployed' : ''}`}>
-                
-                {/* Deployment Checkbox (Commander Only) */}
+              <tr key={p.id} className={`${p.id === localPlayerId ? 'roster-row-selected' : ''}`}>
                 {isCommander && (
                   <td>
                     <input 
@@ -129,49 +117,43 @@ const RosterTab = ({ fleetRoster, discordApplicants = [], localPlayerId, isComma
                   </td>
                 )}
 
-                {/* Identity & Status */}
                 <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div className={`status-dot ${p.status === 'online' ? 'connected' : 'disconnected'}`} style={{ width: '6px', height: '6px' }}></div>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: '13px' }}>{p.name}</div>
-                      <div style={{ fontSize: '10px', color: 'var(--text-muted)', letterSpacing: '0.1em' }}>{p.tag || 'NO TAG'}</div>
+                  <div className="commander-cell">
+                    <div className={`status-dot ${p.status === 'online' ? 'connected' : 'disconnected'}`} />
+                    <div className="name-stack">
+                      <div className="p-name">{p.name}</div>
+                      <div className="p-tag">{p.tag || 'NO TAG'}</div>
                     </div>
                   </div>
                 </td>
 
-                {/* Ship Offers List */}
                 <td>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                  <div className="vessel-pool">
                     {(p.offers || []).map(ship => (
                       <span 
                         key={ship} 
                         className={`ship-pill ${p.id === localPlayerId ? 'ship-pill-my' : ''}`}
-                        onClick={() => p.id === localPlayerId && onRemoveShipOffer(ship)}
-                        style={{ cursor: p.id === localPlayerId ? 'pointer' : 'default' }}
                       >
-                        {ship} {p.id === localPlayerId && '×'}
+                        {ship}
                       </span>
                     ))}
-                    {(!p.offers || p.offers.length === 0) && <span style={{ opacity: 0.3, fontSize: '10px' }}>NO OFFERS</span>}
+                    {(!p.offers || p.offers.length === 0) && <span className="no-offers">NO OFFERS</span>}
                   </div>
                 </td>
 
-                {/* Role Badge */}
                 <td>
-                  <span className={`ship-pill ${p.role !== 'Member' ? 'ship-pill-my' : ''}`} style={{ border: 'none', background: 'rgba(0,0,0,0.3)', fontSize: '9px' }}>
+                  <span className={`ship-pill role-pill ${p.role !== 'Member' ? 'ship-pill-my' : ''}`}>
                     {(p.role || 'Member').toUpperCase()}
                   </span>
                 </td>
 
-                {/* Ship Assignment Dropdown (Commander Only) */}
                 <td>
                   {isCommander ? (
                     <select 
                       value={p.ship || ''} 
                       onChange={(e) => onAssignShip(p.id, e.target.value)}
-                      className="input-field text-mono mini"
-                      style={{ width: '100%', fontSize: '11px', background: 'rgba(0,0,0,0.3)' }}
+                      className="input-field text-mono"
+                      style={{ padding: '4px 8px', fontSize: '12px' }}
                     >
                       <option value="">-- UNASSIGNED --</option>
                       {(p.offers || []).map(ship => (
@@ -179,10 +161,9 @@ const RosterTab = ({ fleetRoster, discordApplicants = [], localPlayerId, isComma
                       ))}
                     </select>
                   ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      {p.ship && <img src={`/${getShipIcon(p.ship)}`} alt="" style={{ width: '16px', height: '16px' }} />}
-                      {/* Icy nautical blue for assigned vessel name — more legible than brass */}
-                      <span style={{ fontWeight: 600, fontSize: '13px', color: p.ship ? 'var(--color-vessel)' : 'inherit' }}>
+                    <div className="assigned-ship-cell">
+                      {p.ship && <img src={`/${getShipIcon(p.ship)}`} alt="" className="ship-icon-small" />}
+                      <span className={`assigned-ship-name ${p.ship ? 'active' : ''}`}>
                         {p.ship ? p.ship.toUpperCase() : '---'}
                       </span>
                     </div>
@@ -194,30 +175,27 @@ const RosterTab = ({ fleetRoster, discordApplicants = [], localPlayerId, isComma
         </table>
       </div>
 
-      {/* 3. Discord Applicant Pool */}
+      {/* 3. Discord Pool */}
       {(isCommander || discordApplicants.length > 0) && (
-        <div className="discord-pool-container glass-panel" style={{ marginTop: '8px' }}>
-          <div 
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '10px' }}
-            onClick={() => setIsDiscordPoolOpen(!isDiscordPoolOpen)}
-          >
-            <h2 style={{ fontSize: '14px', fontWeight: 700, letterSpacing: '0.05em', color: 'rgba(185, 195, 255, 0.85)', textTransform: 'uppercase', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="discord-pool-container glass-panel">
+          <div className="discord-pool-header" onClick={() => setIsDiscordPoolOpen(!isDiscordPoolOpen)}>
+            <h2 className="discord-pool-title">
               Discord Applicant Pool ({discordApplicants.length})
             </h2>
-            <span style={{ fontSize: '14px', opacity: 0.7 }}>{isDiscordPoolOpen ? '▼' : '▶'}</span>
+            <span className="toggle-icon">{isDiscordPoolOpen ? '▼' : '▶'}</span>
           </div>
           
           {isDiscordPoolOpen && (
-            <div style={{ padding: '10px', paddingTop: 0 }}>
+            <div className="discord-pool-body">
               {discordApplicants.length === 0 ? (
-                <p style={{ fontSize: '11px', opacity: 0.5, fontStyle: 'italic', margin: 0 }}>No pending applications from Discord.</p>
+                <p className="no-applicants">No pending applications from Discord.</p>
               ) : (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
+                <div className="applicants-grid">
                   {discordApplicants.map(app => (
-                    <div key={app.id} className="ship-pill" style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(130, 145, 255, 0.35)', background: 'rgba(88, 101, 242, 0.1)', padding: '6px 12px' }}>
-                      {app.avatar && <img src={app.avatar} alt="" style={{ width: '20px', height: '20px', borderRadius: '50%' }} />}
-                      <span style={{ fontWeight: 'bold', fontSize: '12px' }}>{app.name}</span>
-                      <span style={{ fontSize: '10px', opacity: 0.7, fontStyle: 'italic' }}>Awaiting Join</span>
+                    <div key={app.id} className="ship-pill applicant-card">
+                      {app.avatar && <img src={app.avatar} alt="" className="avatar-small" />}
+                      <span className="applicant-name">{app.name}</span>
+                      <span className="applicant-status">Awaiting Join</span>
                     </div>
                   ))}
                 </div>
