@@ -1,23 +1,22 @@
+// --- EMERGENCY STARTUP AUDIT ---
+console.log('CRITICAL: Server process started');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
+const logger = require('./logger');
+
+logger.info('SYSTEM: Absolute Startup Audit...');
+logger.info(`SYSTEM: Node Version: ${process.version}`);
+logger.info(`SYSTEM: Token Length: ${process.env.DISCORD_TOKEN ? process.env.DISCORD_TOKEN.length : 'MISSING'}`);
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
-
-const logger = require('./logger');
 const LobbyManager = require('./LobbyManager');
 const rosterHandler = require('./socketHandlers/rosterHandler');
 const squadronHandler = require('./socketHandlers/squadronHandler');
 const mapHandler = require('./socketHandlers/mapHandler');
 const { initDiscordBot } = require('./discordBot');
-
-// --- Startup Audit ---
-logger.info('SYSTEM: Starting Fleet Command Server Audit...');
-logger.info(`SYSTEM: Environment: ${process.env.NODE_ENV || 'development'}`);
-logger.info(`SYSTEM: Port: ${process.env.PORT || 3001}`);
-logger.info(`SYSTEM: Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
-logger.info(`SYSTEM: Discord Token Present: ${process.env.DISCORD_TOKEN ? 'YES' : 'NO'}`);
 
 /**
  * Guilliman's Fleet Command - Server

@@ -8,18 +8,17 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
  * Registers slash commands and listens for reactions to sync with LobbyManager.
  */
 function initDiscordBot(lobbyManager) {
+    console.log('DISCORD: initDiscordBot function entered');
     logger.info('DISCORD: Initializing bot sequence...');
     
     let token = process.env.DISCORD_TOKEN;
     if (!token) {
-        logger.warn('DISCORD: DISCORD_TOKEN is missing from environment variables. Bot will not start.');
+        logger.warn('DISCORD: DISCORD_TOKEN is missing. Bot aborting.');
         return null;
     }
 
-    // SANITIZATION: Strip quotes, spaces, or newlines that often get pasted accidentally
     token = token.trim().replace(/^["']|["']$/g, '');
-
-    logger.info(`DISCORD: Token detected (Length: ${token.length}). Attempting client instantiation...`);
+    logger.info(`DISCORD: Sanitized Token Length: ${token.length}`);
 
     const client = new Client({
         intents: [
@@ -169,14 +168,17 @@ function initDiscordBot(lobbyManager) {
     });
 
     logger.info('DISCORD: Attempting login...');
+    
+    const loginTimeout = setTimeout(() => {
+        logger.error('DISCORD: Login attempt timed out after 15 seconds! Discord might be unreachable or the token is dead.');
+    }, 15000);
+
     client.login(token).then(() => {
-        logger.info('DISCORD: Login promise resolved.');
+        clearTimeout(loginTimeout);
+        logger.info('DISCORD: Login promise resolved successfully.');
     }).catch(err => {
-        if (err.message.includes('PRIVILEGED_INTENTS')) {
-            logger.error('DISCORD: LOGIN FAILED! You must enable "Message Content Intent" in the Discord Developer Portal under the "Bot" tab.');
-        } else {
-            logger.error(`DISCORD: Login failed critical error: ${err.message}`);
-        }
+        clearTimeout(loginTimeout);
+        logger.error(`DISCORD: Login failed: ${err.message}`);
     });
 
     // Global error handlers for this process to catch Discord.js silent crashes
